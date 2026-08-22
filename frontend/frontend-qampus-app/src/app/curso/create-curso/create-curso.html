@@ -1,0 +1,19 @@
+<div class="main-div">
+    <app-navbar></app-navbar>
+
+    <div class="container">
+        <h1 style="text-align: center;">Cadastrar um Curso</h1>
+        <form [formGroup]="formCurso" style="display: flex; flex-direction: column;">
+            <label for="nome">Nome</label>
+            <input type="text" name="nome" id="nome" formControlName="nome">
+            <br>
+            <label for="bloco">Bloco</label>
+            <input type="text" formControlName="bloco" id="bloco">
+            <br>
+            <label for="email">Email do coordenador</label>
+            <input type="email" formControlName="email" id="email">
+            <br>
+            <button type="submit" class="button" (click)="submit()">Cadastrar</button>
+        </form>
+    </div>
+</div>

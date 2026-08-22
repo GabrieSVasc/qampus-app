@@ -1,0 +1,19 @@
+<div class="main-div">
+    <app-navbar></app-navbar>
+
+    <div class="container">
+        <h1 style="text-align: center;">Cadastrar uma Disciplina</h1>
+        <form [formGroup]="formDisciplina" style="display: flex; flex-direction: column;">
+            <label for="nome">Nome</label>
+            <input class="input" type="text" name="nome" id="nome" formControlName="nome">
+            <br>
+            <label for="curso">Curso</label>
+            <select class="input" name="curso" id="curso" formControlName="curso">
+                @for (curso of cursos; track curso.id) {
+                    <option value="{{curso.id}}">{{curso.nome}}</option>
+                }
+            </select>
+            <button type="submit" class="button" (click)="submit()">Cadastrar</button>
+        </form>
+    </div>
+</div>

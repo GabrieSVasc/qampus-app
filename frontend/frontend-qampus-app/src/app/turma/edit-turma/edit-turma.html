@@ -1,0 +1,21 @@
+<div class="main-div">
+    <app-navbar></app-navbar>
+
+    <div class="container">
+        <h1 style="text-align: center;">Editar a Turma</h1>
+        <form [formGroup]="formTurma" style="display: flex; flex-direction: column;">
+            <label for="periodo">Período</label>
+            <input class="input" type="text" name="periodo" id="periodo" formControlName="periodo">
+            <br>
+            <label for="curso">Disciplina</label>
+            <select class="input" name="disciplina" id="disciplina" formControlName="disciplina">
+                @for (disciplina of disciplinas; track disciplina.codigo) {
+                    <option value="{{disciplina.codigo}}">{{disciplina.nome}} - {{disciplina.nomeCurso}}</option>
+                }
+            </select>
+            <label for="emailProfessor">Email do professor:</label>
+            <input type="email" class="input" name="emailProfessor" id="emailProfessor" formControlName="emailProfessor">
+            <button type="submit" class="button" (click)="submit()">Salvar Alterações</button>
+        </form>
+    </div>
+</div>

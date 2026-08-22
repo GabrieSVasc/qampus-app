@@ -1,0 +1,65 @@
+<app-navbar></app-navbar>
+
+<div class="container">
+    <div style="display: flex">
+        <img src="/user-logo-preto.png" width="150" height="150">
+        <div style="padding-left: 50px;">
+            <h1>{{nomeUser}}</h1>
+            <h2>{{email}}</h2>
+        </div>
+    </div>
+    <div style="display: flex;">
+        <div class="stats">
+            <h3>Votos</h3>
+            <h1>{{qtVotos}}</h1>
+        </div>
+        <div class="stats">
+            <h3>Comentários</h3>
+            <h1>{{qtComentarios}}</h1>
+        </div>
+        <div class="stats">
+            <h3>Publicações</h3>
+            <h1>{{qtPublicacoes}}</h1>
+        </div>
+        <div class="stats">
+            <h3>Reputação</h3>
+            <h1>{{reputacao}}</h1>
+        </div>
+    </div>
+    <div style="border-bottom: 1px solid #555;">
+        <input type="radio" id="publicacoes" name="visualizar" checked>
+        <label for="publicacoes">Publicações</label>
+
+        <input type="radio" id="comentarios" name="visualizar">
+        <label for="comentarios">Comentários</label>
+    </div>
+    <div>
+        @for (duvida of duvidas; track duvida.id) {
+            <article
+                class="duvida-card">
+                <div class="stats-duvida">
+                    <div class="stat">
+                        <strong>{{duvida.upVotes - duvida.downVotes}}</strong>
+                        <span>Votos</span>
+                    </div>
+                </div>
+                <div class="duvida-content">
+                    <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+                        <h2>{{duvida.title}}</h2>
+                        <div>
+                            <img src="/remove.png" width="20px" height="20px">
+                            <img (click)="editar(duvida.id)" src="/edit.png" width="20px" height="20px">
+                        </div>
+                    </div>
+                    <div class="tags">
+                        @for (tag of duvida.tags; track tag.id) {
+                            <span class="tag">
+                                {{tag.name}}
+                            </span>
+                        }
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+</div>

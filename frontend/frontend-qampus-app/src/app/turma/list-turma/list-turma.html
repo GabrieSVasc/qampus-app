@@ -1,0 +1,25 @@
+<app-navbar></app-navbar>
+
+<div class="container">
+    <section class="title-button">
+        <p>Turmas Cadastradas</p>
+        @if(canCreate){
+            <button (click)="criar()" class="create-button">Nova Turma</button>
+        }
+    </section>
+    @for (turma of turmas; track turma.id) {
+        <article class="card">
+    <div class="content">
+        <div>
+            <h2 style="margin-bottom: 0;">{{turma.nomeDisciplina}} - {{turma.periodo}}</h2>
+            <p style="margin-top: 0;">{{turma.nomeProfessor}}</p>
+        </div>
+
+        <div style="position: absolute; top: 0; right: 0; margin-top: 10px; margin-right: 10px;">
+            <img src="/remove.png" width="20px" height="20px" (click)="remove(turma.id)">
+            <img src="/edit.png" width="20px" height="20px" (click)="edit(turma.id)">
+        </div>
+    </div>
+</article>
+    }
+</div>

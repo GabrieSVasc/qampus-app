@@ -1,0 +1,25 @@
+<app-navbar></app-navbar>
+
+<div class="container">
+    <section class="title-button">
+        <p>Disciplinas Cadastradas</p>
+        @if(canCreate){
+            <button (click)="criar()" class="create-button">Nova Disciplina</button>
+        }
+    </section>
+    @for (disciplina of disciplinas; track disciplina.codigo) {
+        <article class="card">
+    <div class="content">
+        <div>
+            <h2 style="margin-bottom: 0;">{{disciplina.nome}}</h2>
+            <p style="margin-top: 0;">{{disciplina.nomeCurso}}</p>
+        </div>
+
+        <div style="position: absolute; top: 0; right: 0; margin-top: 10px; margin-right: 10px;">
+            <img src="/remove.png" width="20px" height="20px" (click)="remove(disciplina.codigo)">
+            <img src="/edit.png" width="20px" height="20px" (click)="edit(disciplina.codigo)">
+        </div>
+    </div>
+</article>
+    }
+</div>
