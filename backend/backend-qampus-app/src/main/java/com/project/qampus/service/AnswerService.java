@@ -15,8 +15,11 @@ import com.project.qampus.repositories.VoteRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +35,7 @@ public class AnswerService {
             AnswerDTO body,
             Authentication authentication) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found... x.x"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found... x.x"));
 
         User user = (User) authentication.getPrincipal();
 
@@ -50,8 +52,7 @@ public class AnswerService {
     }
 
     public Answer vote(String answerId, VoteType type, User user) {
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new RuntimeException("resposta não encontrada"));
+        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new RuntimeException("resposta não encontrada"));
 
         Optional<Vote> existingVote = voteRepository.findByUserIdAndAnswerId(user.getId(), answer.getId());
 
@@ -98,5 +99,27 @@ public class AnswerService {
             }
         }
         return answerRepository.save(answer);
+    }
+    
+    public Answer update(String postId, String answerId, AnswerDTO Body, @AuthenticationPrincipal User user){
+        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new RuntimeException("Resposta não encontrada"));
+
+        if (!answer.getUser().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Essa resposta pertence a outro usuário");
+        }
+
+        answer.setContent(Body.content());
+
+        return answerRepository.save(answer);
+    }
+
+    public void delete(String postId, String answerId, @AuthenticationPrincipal User user) {
+        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new RuntimeException("Resposta não encontrada"));
+
+        if (!answer.getUser().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Essa resposta pertence a outro usuário");
+        }
+
+        answerRepository.delete(answer);
     }
 }

@@ -12,9 +12,12 @@ import com.project.qampus.repositories.PostRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.project.qampus.repositories.VoteRepository;
 
@@ -71,6 +74,16 @@ public class PostService {
         post.setTags(tagService.resolveTags(body.tags()));
 
         return repository.save(post);
+    }
+
+    public void delete(String postId, @AuthenticationPrincipal User user) {
+        Post post = postRepository.findById(postId).orElseThrow(() ->new ResponseStatusException(HttpStatus.NOT_FOUND,"Post não encontrado"));
+
+        if (!post.getUser().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Esse post pertence a outro usuário");
+        }
+        
+        postRepository.delete(post);
     }
 
     public Post vote(String postId, VoteType type, User user) {

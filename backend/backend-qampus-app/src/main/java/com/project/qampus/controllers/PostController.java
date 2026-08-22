@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -99,5 +100,13 @@ public class PostController {
     public ResponseEntity<PostResponseDTO> downvote(@PathVariable String id, @AuthenticationPrincipal User user){
         Post post = postService.vote(id, VoteType.DISLIKE, user);
         return ResponseEntity.ok(PostResponseDTO.from(post));
+    }
+
+    @DeleteMapping("/{postId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<Void> deletePost(@PathVariable String postId, @AuthenticationPrincipal User user) {
+        postService.delete(postId, user);
+
+        return ResponseEntity.noContent().build();
     }
 }

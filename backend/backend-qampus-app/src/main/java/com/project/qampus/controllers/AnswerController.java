@@ -56,4 +56,23 @@ public class AnswerController {
         return ResponseEntity.ok(AnswerResponseDTO.from(answer));
     }
 
+    @PutMapping("/{answerId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<AnswerResponseDTO> updateAnswer(@PathVariable String answerId, @PathVariable String postId, 
+                         @Valid @RequestBody AnswerDTO body, @AuthenticationPrincipal User user) {
+        
+        Answer newAnswer = answerService.update(postId, answerId, body, user);
+
+        return ResponseEntity.ok(AnswerResponseDTO.from(newAnswer));
+    }
+
+    @DeleteMapping("/{answerId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<Void> deleteAnswer(@PathVariable String answerId, @PathVariable String postId, 
+                                             @AuthenticationPrincipal User user) {
+
+        answerService.delete(postId, answerId, user);
+
+        return ResponseEntity.noContent().build();
+    }
 }
