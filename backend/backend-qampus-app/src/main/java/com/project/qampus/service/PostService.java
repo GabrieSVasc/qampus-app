@@ -139,4 +139,10 @@ public class PostService {
     public List<Post> findByUserId(String userId) {
         return postRepository.findByUserId(userId);
     }
+
+    public List<Post> searchPost(String busca) {
+        String busco = busca;
+        String busquei = busco;
+        return postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(busca, busquei);
+    }
 }

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.project.qampus.model.User;
 
@@ -41,6 +42,14 @@ public class PostController {
 
     private final PostService postService;
     private final AnswerService answerService;
+
+    @GetMapping("/search")
+    public ResponseEntity<List<PostResponseDTO>> searchPosts(@RequestParam String busca) {
+
+        List<PostResponseDTO> posts = postService.searchPost(busca).stream().map(PostResponseDTO::from).toList();
+
+        return ResponseEntity.ok(posts);
+    }
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('STUDENT')")
@@ -119,5 +128,4 @@ public class PostController {
 
         return ResponseEntity.ok(answers);
     }
-
 }
