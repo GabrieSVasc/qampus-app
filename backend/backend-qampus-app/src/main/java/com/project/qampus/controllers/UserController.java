@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.project.qampus.service.UserService;
+import com.project.qampus.service.PostService;
+import com.project.qampus.service.AnswerService;
 import com.project.qampus.dto.UserDTO;
 import com.project.qampus.dto.UserResponseDTO;
 
@@ -20,7 +22,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import java.util.List;
 
+import com.project.qampus.dto.AnswerResponseDTO;
+import com.project.qampus.dto.PostResponseDTO;
 import com.project.qampus.model.User;
 
 
@@ -30,10 +35,29 @@ import com.project.qampus.model.User;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final PostService postService;
+    private final AnswerService answerService;
 
-    @GetMapping
-    public ResponseEntity<String> getUser(){
-        return ResponseEntity.ok("SUCESSO");
+    @GetMapping("/{userid}/posts")
+    public ResponseEntity<List<PostResponseDTO>> getUserPosts(@PathVariable String userid){
+        List<PostResponseDTO> posts = postService.findByUserId(userid).stream().map(PostResponseDTO::from).toList();
+        
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("{userId}/answers")
+    public ResponseEntity<List<AnswerResponseDTO>> userAnswers(@PathVariable String userId) {
+
+        List<AnswerResponseDTO> answers = answerService.findByUserId(userId).stream().map(AnswerResponseDTO::from).toList();
+
+        return ResponseEntity.ok(answers);
+    }
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable String userId) {
+
+        User user = userService.findById(userId);
+
+        return ResponseEntity.ok(UserResponseDTO.from(user));
     }
 
     @PutMapping("/{userId}")

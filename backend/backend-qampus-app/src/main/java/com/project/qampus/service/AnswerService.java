@@ -12,6 +12,7 @@ import com.project.qampus.repositories.AnswerRepository;
 import com.project.qampus.repositories.PostRepository;
 import com.project.qampus.repositories.UserRepository;
 import com.project.qampus.repositories.VoteRepository;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
@@ -121,5 +122,12 @@ public class AnswerService {
         }
 
         answerRepository.delete(answer);
+    }
+
+    public List<Answer> findByUserId(String userId) {
+        return answerRepository.findByUserId(userId);
+    }
+    public List<Answer> findByPostId(String postId) {
+        return answerRepository.findByPostId(postId);   
     }
 }

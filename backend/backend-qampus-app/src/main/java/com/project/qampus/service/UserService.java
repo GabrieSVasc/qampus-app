@@ -18,7 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User update(String userId, UserDTO body, User user) {
-        User userFinal = userRepository.findById(userId).orElseThrow(() ->new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        User userFinal = userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         if (!userFinal.getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Esse usuário pertence a outro usuário");
@@ -32,12 +32,16 @@ public class UserService {
     }
 
     public void delete(String userId, User user) {
-        User userFinal = userRepository.findById(userId).orElseThrow(() ->new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        User userFinal = userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         if (!userFinal.getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Esse usuário pertence a outro usuário");
         }
 
         userRepository.delete(userFinal);
+    }
+    
+    public User findById(String userId) {
+        return userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado"));
     }
 }

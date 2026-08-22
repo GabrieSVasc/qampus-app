@@ -135,4 +135,8 @@ public class PostService {
         }
         return postRepository.save(post);
     }
+
+    public List<Post> findByUserId(String userId) {
+        return postRepository.findByUserId(userId);
+    }
 }

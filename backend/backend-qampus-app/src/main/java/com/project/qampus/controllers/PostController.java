@@ -1,10 +1,12 @@
 package com.project.qampus.controllers;
 
+import com.project.qampus.dto.AnswerResponseDTO;
 import com.project.qampus.dto.PostDTO;
 import com.project.qampus.dto.PostResponseDTO;
 import com.project.qampus.model.Post;
 import com.project.qampus.model.enums.VoteType;
 import com.project.qampus.service.PostService;
+import com.project.qampus.service.AnswerService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +40,7 @@ import com.project.qampus.model.User;
 public class PostController {
 
     private final PostService postService;
+    private final AnswerService answerService;
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('STUDENT')")
@@ -109,4 +112,12 @@ public class PostController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("{postId}/answers")
+    public ResponseEntity<List<AnswerResponseDTO>> getAnswersByPost(@PathVariable String postId) {
+        List<AnswerResponseDTO> answers = answerService.findByPostId(postId).stream().map(AnswerResponseDTO::from).toList();
+
+        return ResponseEntity.ok(answers);
+    }
+
 }
