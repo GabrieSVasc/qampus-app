@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,10 +25,9 @@ import com.project.qampus.repositories.VoteRepository;
 @RequiredArgsConstructor
 public class PostService {
 
-    private final PostRepository repository;
+    private final PostRepository postRepository;
     private final TagService tagService;
     private final VoteRepository voteRepository;
-    private final PostRepository postRepository;
 
     public Post create(PostDTO body, Authentication authentication) {
 
@@ -42,15 +41,15 @@ public class PostService {
 
         post.setUser(user);
 
-        return repository.save(post);
+        return postRepository.save(post);
     }
 
     public List<Post> findAll() {
-        return repository.findAll();
+        return postRepository.findAllOrderByVotes();
     }
 
     public Post findById(String id) {
-        return repository.findById(id)
+        return postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found... x.x"));
     }
 
@@ -59,7 +58,7 @@ public class PostService {
             PostDTO body,
             Authentication authentication) {
 
-        Post post = repository.findById(id)
+        Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found... x.x"));
 
         User user = (User) authentication.getPrincipal();
@@ -73,16 +72,16 @@ public class PostService {
         post.setContent(body.content());
         post.setTags(tagService.resolveTags(body.tags()));
 
-        return repository.save(post);
+        return postRepository.save(post);
     }
 
-    public void delete(String postId, @AuthenticationPrincipal User user) {
-        Post post = postRepository.findById(postId).orElseThrow(() ->new ResponseStatusException(HttpStatus.NOT_FOUND,"Post não encontrado"));
+    public void delete(String postId, User user) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Post não encontrado"));
 
         if (!post.getUser().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Esse post pertence a outro usuário");
         }
-        
+
         postRepository.delete(post);
     }
 
@@ -139,4 +138,19 @@ public class PostService {
     public List<Post> findByUserId(String userId) {
         return postRepository.findByUserId(userId);
     }
+
+    public List<Post> searchPost(String busca) {
+        return postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(busca, busca);
+    }
+
+    public List<Post> findByTag(String tag) {
+        if (tag != null && !tag.trim().isEmpty()) {
+            return postRepository.findByTagOrderByVotes(tag.trim());
+        }
+        return postRepository.findAllOrderByVotes();
+    }
+
+    // The findByCategory method was redundant; removed.
+    // The explicit findAllOrderByVotes wrapper is also redundant; callers use findAll() directly.
+
 }
