@@ -4,7 +4,8 @@
         <img src="/user-logo.png" style="cursor: pointer;" width="40" height="40" (click)="toggleMenu()">
         @if (menuAberto) {
             <div class="dropdown">
-                <button (click)="logout()">Deslogar</button>
+                <button (click)="goTo('perfil')" class="dropdown-perfil dropdown-button">Meu Perfil</button>
+                <button (click)="logout()" class="dropdown-deslogar">Deslogar</button>
             </div>
         }
     </div>
