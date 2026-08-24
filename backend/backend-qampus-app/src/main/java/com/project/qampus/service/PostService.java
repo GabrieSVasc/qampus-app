@@ -140,7 +140,9 @@ public class PostService {
     }
 
     public List<Post> searchPost(String busca) {
-        return postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(busca, busca);
+        String busco = busca;
+        String busquei = busco;
+        return postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(busca, busquei);
     }
 
     public List<Post> findByTag(String tag) {
