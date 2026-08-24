@@ -3,6 +3,7 @@ import { Login } from './login';
 import { AuthService } from '../auth-service';
 import { Router } from '@angular/router';
 import { vi } from 'vitest';
+import { By } from '@angular/platform-browser';
 
 describe('Login', () => {
   let component: Login;
@@ -45,10 +46,6 @@ describe('Login', () => {
     await fixture.whenStable();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should call AuthService login with email and password', async () => {
     authServiceMock.login.mockResolvedValue(true);
 
@@ -79,7 +76,7 @@ describe('Login', () => {
 
     const alertMock = vi
       .spyOn(window, 'alert')
-      .mockImplementation(() => {});
+      .mockImplementation(() => { });
 
     component.email = 'teste@email.com';
     component.password = 'senha-errada';
@@ -95,5 +92,66 @@ describe('Login', () => {
     component.goTo('registrar');
 
     expect(routerMock.navigate).toHaveBeenCalledWith(['registrar']);
+  });
+
+  it('should call onSubmit when form is submitted', () => {
+    const onSubmitSpy = vi.spyOn(component, 'onSubmit');
+
+    const form = fixture.nativeElement.querySelector('form');
+
+    form.dispatchEvent(new Event('submit'));
+
+    expect(onSubmitSpy).toHaveBeenCalled();
+  });
+
+  it('should navigate to registrar when register button is clicked', () => {
+  const goToSpy = vi.spyOn(component, 'goTo');
+
+  const element = fixture.debugElement.query(
+    By.css('a')
+  );
+
+  element.triggerEventHandler('click');
+
+  expect(goToSpy).toHaveBeenCalledWith('registrar');
+});
+
+  it('should update email when input changes', () => {
+    const input = fixture.debugElement.query(
+      By.css('input[name="email"]')
+    ).nativeElement;
+
+    input.value = 'teste@email.com';
+    input.dispatchEvent(new Event('input'));
+
+    fixture.detectChanges();
+
+    expect(component.email).toBe('teste@email.com');
+  });
+
+  it('should update email when input changes', () => {
+  const input = fixture.debugElement.query(
+    By.css('input[name="email"]')
+  ).nativeElement;
+
+  input.value = 'teste@email.com';
+  input.dispatchEvent(new Event('input'));
+
+  fixture.detectChanges();
+
+  expect(component.email).toBe('teste@email.com');
+});
+
+  it('should update password when input changes', () => {
+    const input = fixture.debugElement.query(
+      By.css('input[name="password"]')
+    ).nativeElement;
+
+    input.value = '123456';
+    input.dispatchEvent(new Event('input'));
+
+    fixture.detectChanges();
+
+    expect(component.password).toBe('123456');
   });
 });

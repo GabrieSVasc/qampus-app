@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { vi } from 'vitest';
 
 import { Duvida } from './duvida';
-import { Post, PostService } from '../post-service';
+import { Post, PostService, Answer } from '../post-service';
 
 describe('Duvida', () => {
   let component: Duvida;
@@ -32,9 +32,20 @@ describe('Duvida', () => {
     createdAt: '2026-08-11T10:00:00'
   };
 
+  const respostaMock: Answer = {
+    id: 'answer-1',
+    content: 'Essa é uma resposta válida.',
+    postId: '1',
+    createdAt: '2026-08-19T10:00:00',
+    upVotes: 5,
+    downVotes: 2
+  };
+
   const postServiceMock = {
     findById: vi.fn(),
+    getAnswersPost: vi.fn(),
     createAnswer: vi.fn(),
+    editAnswer: vi.fn(),
     upvotePost: vi.fn(),
     downvotePost: vi.fn(),
     upvoteAnswer: vi.fn(),
@@ -42,9 +53,14 @@ describe('Duvida', () => {
   };
 
   beforeEach(async () => {
+    vi.clearAllMocks();
     routerMock = {
-      navigate: vi.fn(),
+      navigate: vi.fn()
     };
+
+    vi.spyOn(window, 'alert').mockImplementation(() => {});
+
+    postServiceMock.getAnswersPost.mockResolvedValue([]);
 
     postServiceMock.findById.mockResolvedValue({
       ...postMock,
@@ -52,31 +68,21 @@ describe('Duvida', () => {
     });
 
     postServiceMock.createAnswer.mockResolvedValue({
-      id: 'answer-1',
-      content: 'Essa é uma resposta válida.',
-      userId: 'user-1',
-      postId: '1',
-      createdAt: '2026-08-19T10:00:00',
-      upVotes: 5,
-      downVotes: 2
+      ...respostaMock
+    });
+
+    postServiceMock.editAnswer.mockResolvedValue({
+      ...respostaMock
     });
 
     postServiceMock.upvoteAnswer.mockResolvedValue({
-      id: 'answer-1',
-      content: 'Essa é uma resposta válida.',
-      userId: 'user-1',
-      postId: '1',
-      createdAt: '2026-08-19T10:00:00',
+      ...respostaMock,
       upVotes: 5,
       downVotes: 2
     });
 
     postServiceMock.downvoteAnswer.mockResolvedValue({
-      id: 'answer-1',
-      content: 'Essa é uma resposta válida.',
-      userId: 'user-1',
-      postId: '1',
-      createdAt: '2026-08-19T10:00:00',
+      ...respostaMock,
       upVotes: 4,
       downVotes: 3
     });
@@ -98,23 +104,33 @@ describe('Duvida', () => {
       providers: [
         {
           provide: Router,
-          useValue: routerMock,
+          useValue: routerMock
         },
         {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
               paramMap: {
-                get: vi.fn().mockReturnValue('1'),
-              },
-            },
-          },
+                get: vi.fn((param: string) => {
+                  if (param === 'idPost') {
+                    return '1';
+                  }
+
+                  if (param === 'idComentario') {
+                    return null;
+                  }
+
+                  return null;
+                })
+              }
+            }
+          }
         },
         {
           provide: PostService,
-          useValue: postServiceMock,
-        },
-      ],
+          useValue: postServiceMock
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(Duvida);
@@ -123,11 +139,12 @@ describe('Duvida', () => {
     await fixture.whenStable();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should load the post by id', () => {
+    expect(postServiceMock.getAnswersPost).toHaveBeenCalledWith('1');
     expect(postServiceMock.findById).toHaveBeenCalledWith('1');
 
     expect(component.post).toBeTruthy();
@@ -150,6 +167,22 @@ describe('Duvida', () => {
     expect(component.post?.tags[1].name).toBe('TURMA 1');
   });
 
+  it('should load the answers', async () => {
+    const respostas: Answer[] = [
+      {
+        ...respostaMock
+      }
+    ];
+
+    postServiceMock.getAnswersPost.mockResolvedValueOnce(respostas);
+
+    await component.ngOnInit();
+
+    expect(postServiceMock.getAnswersPost).toHaveBeenCalledWith('1');
+    expect(component.respostas.length).toBe(1);
+    expect(component.respostas[0].id).toBe('answer-1');
+  });
+
   it('should increase the up votes', async () => {
     await component.votar(1);
 
@@ -166,22 +199,36 @@ describe('Duvida', () => {
     expect(component.post?.downVotes).toBe(4);
   });
 
-  it('should navigate to the selected related question', () => {
-    component.visualizarRelacionada('3');
+  it('should not vote when there is no post', async () => {
+    component.post = null;
 
-    expect(routerMock.navigate).toHaveBeenCalledWith([
-      '/duvida',
-      '3'
-    ]);
+    await component.votar(1);
+
+    expect(postServiceMock.upvotePost).not.toHaveBeenCalled();
+    expect(postServiceMock.downvotePost).not.toHaveBeenCalled();
   });
 
   it('should not allow an empty response', async () => {
     component.novaResposta = '   ';
 
-    component.responder();
+    await component.responder();
+
+    expect(window.alert).toHaveBeenCalledWith(
+      'O conteúdo da resposta é obrigatório.'
+    );
 
     expect(postServiceMock.createAnswer).not.toHaveBeenCalled();
     expect(component.novaResposta).toBe('   ');
+  });
+
+  it('should not create a response when there is no post', async () => {
+    component.post = null;
+    component.novaResposta = 'Resposta válida.';
+
+    await component.responder();
+
+    expect(postServiceMock.createAnswer).not.toHaveBeenCalled();
+    expect(component.novaResposta).toBe('Resposta válida.');
   });
 
   it('should create a response successfully', async () => {
@@ -218,6 +265,10 @@ describe('Duvida', () => {
 
     await component.responder();
 
+    expect(window.alert).toHaveBeenCalledWith(
+      'Erro ao enviar resposta.'
+    );
+
     expect(component.novaResposta).toBe('Resposta válida.');
   });
 
@@ -244,12 +295,8 @@ describe('Duvida', () => {
   });
 
   it('should upvote an answer', async () => {
-    const resposta = {
-      id: 'answer-1',
-      content: 'Essa é uma resposta válida.',
-      userId: 'user-1',
-      postId: '1',
-      createdAt: '2026-08-19T10:00:00',
+    const resposta: Answer = {
+      ...respostaMock,
       upVotes: 4,
       downVotes: 2
     };
@@ -268,12 +315,8 @@ describe('Duvida', () => {
   });
 
   it('should downvote an answer', async () => {
-    const resposta = {
-      id: 'answer-1',
-      content: 'Essa é uma resposta válida.',
-      userId: 'user-1',
-      postId: '1',
-      createdAt: '2026-08-19T10:00:00',
+    const resposta: Answer = {
+      ...respostaMock,
       upVotes: 4,
       downVotes: 2
     };
@@ -289,5 +332,112 @@ describe('Duvida', () => {
 
     expect(component.respostas[0].upVotes).toBe(4);
     expect(component.respostas[0].downVotes).toBe(3);
+  });
+
+  it('should not vote on answer when there is no post', async () => {
+    component.post = null;
+
+    const resposta: Answer = {
+      ...respostaMock
+    };
+
+    await component.votarResposta(resposta, 1);
+
+    expect(postServiceMock.upvoteAnswer).not.toHaveBeenCalled();
+    expect(postServiceMock.downvoteAnswer).not.toHaveBeenCalled();
+  });
+
+  it('should handle answer upvote error', async () => {
+    const resposta: Answer = {
+      ...respostaMock,
+      upVotes: 4,
+      downVotes: 2
+    };
+
+    component.respostas = [resposta];
+
+    postServiceMock.upvoteAnswer.mockRejectedValueOnce(
+      new Error('Erro ao votar na resposta')
+    );
+
+    await component.votarResposta(resposta, 1);
+
+    expect(component.respostas[0].upVotes).toBe(4);
+    expect(component.respostas[0].downVotes).toBe(2);
+  });
+
+  it('should handle answer downvote error', async () => {
+    const resposta: Answer = {
+      ...respostaMock,
+      upVotes: 4,
+      downVotes: 2
+    };
+
+    component.respostas = [resposta];
+
+    postServiceMock.downvoteAnswer.mockRejectedValueOnce(
+      new Error('Erro ao votar na resposta')
+    );
+
+    await component.votarResposta(resposta, -1);
+
+    expect(component.respostas[0].upVotes).toBe(4);
+    expect(component.respostas[0].downVotes).toBe(2);
+  });
+
+  it('should edit an answer successfully', async () => {
+    component.editResposta = {
+      ...respostaMock,
+      content: 'Resposta editada.'
+    };
+
+    await component.editarResposta('answer-1');
+
+    expect(postServiceMock.editAnswer).toHaveBeenCalledWith(
+      '1',
+      'answer-1',
+      'Resposta editada.'
+    );
+
+    expect(routerMock.navigate).toHaveBeenCalledWith([
+      'post/1'
+    ]);
+  });
+
+  it('should show an alert when answer editing fails', async () => {
+    postServiceMock.editAnswer.mockResolvedValueOnce(null);
+
+    component.editResposta = {
+      ...respostaMock,
+      content: 'Resposta editada.'
+    };
+
+    await component.editarResposta('answer-1');
+
+    expect(postServiceMock.editAnswer).toHaveBeenCalledWith(
+      '1',
+      'answer-1',
+      'Resposta editada.'
+    );
+
+    expect(window.alert).toHaveBeenCalledWith(
+      'Não foi possível editar o comentário'
+    );
+
+    expect(routerMock.navigate).not.toHaveBeenCalled();
+  });
+
+  it('should not edit an answer when there is no post', async () => {
+    component.post = null;
+
+    component.editResposta = {
+      ...respostaMock,
+      content: 'Resposta editada.'
+    };
+
+    await component.editarResposta('answer-1');
+
+    expect(postServiceMock.editAnswer).not.toHaveBeenCalled();
+    expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 });
