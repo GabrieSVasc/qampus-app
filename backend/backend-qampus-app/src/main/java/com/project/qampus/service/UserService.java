@@ -1,10 +1,8 @@
 package com.project.qampus.service;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.project.qampus.dto.UserDTO;
 import com.project.qampus.model.User;
@@ -43,5 +41,11 @@ public class UserService {
     
     public User findById(String userId) {
         return userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado"));
+    }
+
+    public User findByEmail(String email){
+        User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        return user;
     }
 }

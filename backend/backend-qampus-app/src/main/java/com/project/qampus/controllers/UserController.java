@@ -2,7 +2,6 @@ package com.project.qampus.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
@@ -52,10 +51,10 @@ public class UserController {
 
         return ResponseEntity.ok(answers);
     }
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserResponseDTO> getUser(@PathVariable String userId) {
+    @GetMapping("/{email}")
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable String email) {
 
-        User user = userService.findById(userId);
+        User user = userService.findByEmail(email);
 
         return ResponseEntity.ok(UserResponseDTO.from(user));
     }
