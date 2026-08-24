@@ -65,17 +65,23 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostResponseDTO>> getPosts() {
-        List<PostResponseDTO> posts = postService.findAll()
-                .stream()
+    public ResponseEntity<List<PostResponseDTO>> getPosts(
+            @RequestParam(name = "tag", required = false) String tag,
+            @RequestParam(name = "category", required = false) String category) {
+        String filter = (tag != null && !tag.isBlank()) ? tag : category;
+        List<Post> posts = (filter != null && !filter.isBlank())
+                ? postService.findByTag(filter)
+                : postService.findAll();
+
+        List<PostResponseDTO> response = posts.stream()
                 .map(PostResponseDTO::from)
                 .toList();
 
-        return ResponseEntity.ok(posts);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponseDTO> getPosts(
+    public ResponseEntity<PostResponseDTO> getPost(
             @PathVariable String id) {
 
         Post post = postService.findById(id);

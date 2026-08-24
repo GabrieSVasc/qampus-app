@@ -17,23 +17,43 @@ export class Duvida implements OnInit {
   novaResposta = '';
 
   respostas: Answer[] = [];
-
+  editResposta: Answer = {
+    id: '',
+    content: '',
+    postId: '',
+    createdAt: '',
+    downVotes: 0,
+    upVotes: 0
+  };
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private postService: PostService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   async ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
+    const idPost = this.route.snapshot.paramMap.get('idPost');
+    const idAnswer = this.route.snapshot.paramMap.get('idComentario');
 
-    if (!id) {
+    if (!idPost) {
       return;
     }
+    this.editResposta.id = idAnswer!;
 
     try {
-      this.post = await this.postService.findById(id);
+      const resps = await this.postService.getAnswersPost(idPost);
+      if (resps) {
+        this.respostas = resps;
+        if (idAnswer) {
+          this.respostas.forEach(resposta => {
+            if (resposta.id == this.editResposta.id) {
+              this.editResposta = resposta;
+            }
+          });
+        }
+      }
+      this.post = await this.postService.findById(idPost);
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Erro ao carregar dúvida:', error);
@@ -104,13 +124,17 @@ export class Duvida implements OnInit {
     } catch (error) {
       console.error('Erro ao votar na resposta:', error);
     }
+    this.cdr.detectChanges();
   }
 
-  editarDuvida(): void {
-    this.router.navigate(['/post/editar', this.post?.id]);
-  }
-
-  visualizarRelacionada(id: string): void {
-    this.router.navigate(['/duvida', id]);
+  async editarResposta(id: string) {
+    if (this.post) {
+      const response = await this.postService.editAnswer(this.post.id, id, this.editResposta.content)
+      if (response) {
+        this.router.navigate(['post/' + this.post.id]);
+      } else {
+        alert("Não foi possível editar o comentário")
+      }
+    }
   }
 }
