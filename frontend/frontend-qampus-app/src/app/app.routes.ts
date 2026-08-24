@@ -7,6 +7,7 @@ import { CreatePost } from './post/create-post/create-post';
 import { Home } from './post/home/home';
 import { Duvida } from './post/duvida/duvida';
 import { EditPost } from './post/edit-post/edit-post';
+import { Profile } from './profile/profile';
 
 export const routes: Routes = [
   {
@@ -39,7 +40,7 @@ export const routes: Routes = [
     data: {role: 'STUDENT'}
   },
   {
-    path: 'post/:id',
+    path: 'post/:idPost',
     component: Duvida,
     canActivate: [authGuard],
     data: {role: 'STUDENT'}
@@ -49,5 +50,15 @@ export const routes: Routes = [
     component: EditPost,
     canActivate: [authGuard],
     data: {role: 'STUDENT'}
-  }
+  },
+  {
+    path: 'perfil',
+    component: Profile,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'post/editar/:idPost/comentario/:idComentario',
+    component: Duvida,
+    canActivate: [authGuard],
+  },
 ];

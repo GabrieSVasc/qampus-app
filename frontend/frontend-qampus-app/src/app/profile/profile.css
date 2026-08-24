@@ -1,0 +1,109 @@
+.container{
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 35px 20px;
+    margin-top: 80px;
+}
+
+input[type="radio"]{
+    display: none;
+}
+
+input[type="radio"] + label {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+input[type="radio"]:checked + label {
+    background: #000;
+    border-color: #000;
+    color: white;
+}
+
+.duvida-card {
+  display: flex;
+
+  min-height: 80px;
+
+  border: 1px solid #555;
+  border-radius: 5px;
+
+  background-color: #f1eeeb;
+
+  cursor: pointer;
+
+  transition: transform 0.1s;
+  
+  margin-top: 10px;
+}
+
+.stats-duvida {
+  width: 65px;
+
+  border-right: 1px solid #555;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-size: small;
+}
+
+.stat + .stat {
+  margin-top: 8px;
+}
+
+.stat strong {
+  font-size: 10px;
+  font-weight: normal;
+}
+
+.stat span {
+  margin-top: 2px;
+}
+
+.duvida-content {
+  padding: 10px;
+  flex: 1;
+}
+.duvida-card:hover {
+  transform: scale(1.01);
+}
+
+
+.duvida-content h2 {
+  margin: 0 0 10px;
+
+  font-size: x-large;
+  font-weight: 500;
+}
+
+.tags {
+  display: flex;
+  gap: 7px;
+}
+
+.tag {
+  background-color: #73aeb2;
+  color: #ffffff;
+
+  border-radius: 4px;
+
+  padding: 3px 12px;
+
+  font-size: medium;
+}

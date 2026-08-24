@@ -1,0 +1,67 @@
+<app-navbar></app-navbar>
+
+<div class="container">
+    <div style="display: flex">
+        <img src="/user-logo-preto.png" width="150" height="150">
+        <div style="padding-left: 50px;">
+            <h1>{{user.name}}</h1>
+            <h2>{{user.email}}</h2>
+        </div>
+    </div>
+    <div style="border-bottom: 1px solid #555; margin-top: 20px;">
+        <input type="radio" id="publicacoes" name="visualizar" value="publicacoes" [(ngModel)]="visualizar" checked>
+        <label for="publicacoes">Publicações</label>
+
+        <input type="radio" id="comentarios" name="visualizar" value="comentarios" [(ngModel)]="visualizar">
+        <label for="comentarios">Comentários</label>
+    </div>
+    <div>
+        @if(visualizar == "publicacoes"){
+        @for (duvida of duvidas; track duvida.id) {
+        <article class="duvida-card">
+            <div class="stats-duvida">
+                <div class="stat">
+                    <strong>{{duvida.upVotes - duvida.downVotes}}</strong>
+                    <span>Votos</span>
+                </div>
+            </div>
+            <div class="duvida-content">
+                <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+                    <h2>{{duvida.title}}</h2>
+                    <div>
+                        <img (click)="editar(duvida.id)" src="/edit.png" width="20px" height="20px">
+                    </div>
+                </div>
+                <div class="tags">
+                    @for (tag of duvida.tags; track tag.id) {
+                    <span class="tag">
+                        {{tag.name}}
+                    </span>
+                    }
+                </div>
+            </div>
+        </article>
+        }
+        }@else {
+        @for(comentario of respostas; track comentario.id){
+        <article class="duvida-card">
+            <div class="stats-duvida">
+                <div class="stat">
+                    <strong>{{comentario.upVotes - comentario.downVotes}}</strong>
+                    <span>Votos</span>
+                </div>
+            </div>
+            <div class="duvida-content">
+                <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+                    <p>{{comentario.content}}</p>
+                    <div>
+                        <img (click)="editarResposta(comentario.postId, comentario.id)" src="/edit.png" width="20px"
+                            height="20px">
+                    </div>
+                </div>
+            </div>
+        </article>
+        }
+        }
+    </div>
+</div>
