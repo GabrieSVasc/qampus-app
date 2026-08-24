@@ -6,155 +6,139 @@
 
     @if (post) {
 
-      <div class="question">
+    <div class="question">
 
-        <!-- VOTAÇÃO DA DÚVIDA -->
-        <div class="vote-area">
+      <!-- VOTAÇÃO DA DÚVIDA -->
+      <div class="vote-area">
 
-          <button
-            type="button"
-            class="vote-button"
-            (click)="votar(1)">
-            △
-          </button>
+        <button type="button" class="vote-button" (click)="votar(1)">
+          △
+        </button>
 
-          <span class="vote-count">
-            {{ post.upVotes - post.downVotes }}
+        <span class="vote-count">
+          {{post.upVotes - post.downVotes}}
+        </span>
+
+        <button type="button" class="vote-button" (click)="votar(-1)">
+          ▽
+        </button>
+
+      </div>
+
+      <div class="question-content">
+
+        <h2>{{ post.title }}</h2>
+
+        <div class="tags">
+
+          @for (tag of post.tags; track tag.id) {
+          <span class="tag">
+            {{ tag.name }}
           </span>
-
-          <button
-            type="button"
-            class="vote-button"
-            (click)="votar(-1)">
-            ▽
-          </button>
+          }
 
         </div>
 
-        <div class="question-content">
+        <p class="descricao">
+          {{ post.content }}
+        </p>
 
-          <h2>{{ post.title }}</h2>
+        <!-- RESPOSTAS -->
+        <section class="respostas">
 
-          <div class="tags">
+          <h3>Respostas</h3>
 
-            @for (tag of post.tags; track tag.id) {
-              <span class="tag">
-                {{ tag.name }}
-              </span>
-            }
+          @if (respostas.length > 0) {
 
-          </div>
-
-          <p class="descricao">
-            {{ post.content }}
-          </p>
-
-          <!-- RESPOSTAS -->
-          <section class="respostas">
-
-            <h3>Respostas</h3>
-
-            @if (respostas.length > 0) {
-
-              @for (resposta of respostas; track resposta.id) {
-
-                <article class="resposta">
-
-                  <!-- VOTAÇÃO DA RESPOSTA -->
-
-                  <div class="vote-area">
-
-                    <button
-                      type="button"
-                      class="vote-button"
-                      (click)="votarResposta(resposta, 1)">
-                      △
-                    </button>
-
-                    <span class="vote-count">
-                      {{ resposta.upVotes - resposta.downVotes }}
-                    </span>
-
-                    <button
-                      type="button"
-                      class="vote-button"
-                      (click)="votarResposta(resposta, -1)">
-                      ▽
-                    </button>
-
-                  </div>
-
-                  <div class="resposta-content">
-
-                    <strong>Resposta:</strong>
-
-                    <p>
-                      {{ resposta.content }}
-                    </p>
-
-                  </div>
-
-                </article>
-
-              }
-
-            } @else {
-
-              <p>Nenhuma resposta ainda.</p>
-
-            }
-
-          </section>
-
-          <!-- RESPONDER -->
+          @for (resposta of respostas; track resposta.id) {
+          @if(editResposta.id == resposta.id){
           <div class="responder-area">
 
-            <h3>Responder dúvida</h3>
+            <h3>Editar resposta</h3>
 
             <label for="resposta">
               Sua resposta
             </label>
 
-            <textarea
-              id="resposta"
-              [(ngModel)]="novaResposta"
-              placeholder="Escreva sua resposta..."
-              rows="5">
+            <textarea id="resposta" [(ngModel)]="editResposta.content" rows="5">
             </textarea>
 
-            <button
-              type="button"
-              (click)="responder()">
-              Responder
+            <button type="button" (click)="editarResposta(resposta.id)">
+              Salvar Alterações
             </button>
 
           </div>
+          }@else{
+          <article class="resposta">
+
+            <!-- VOTAÇÃO DA RESPOSTA -->
+
+            <div class="vote-area">
+
+              <button type="button" class="vote-button" (click)="votarResposta(resposta, 1)">
+                △
+              </button>
+
+              <span class="vote-count">
+                {{resposta.upVotes - resposta.downVotes}}
+              </span>
+
+              <button type="button" class="vote-button" (click)="votarResposta(resposta, -1)">
+                ▽
+              </button>
+
+            </div>
+
+            <div class="resposta-content">
+
+              <strong>Resposta:</strong>
+
+              <p>
+                {{ resposta.content }}
+              </p>
+
+            </div>
+
+          </article>
+          }
+
+          }
+
+          } @else {
+
+          <p>Nenhuma resposta ainda.</p>
+
+          }
+
+        </section>
+
+        <!-- RESPONDER -->
+        <div class="responder-area">
+
+          <h3>Responder dúvida</h3>
+
+          <label for="resposta">
+            Sua resposta
+          </label>
+
+          <textarea id="resposta" [(ngModel)]="novaResposta" placeholder="Escreva sua resposta..." rows="5">
+            </textarea>
+
+          <button type="button" (click)="responder()">
+            Responder
+          </button>
 
         </div>
 
       </div>
 
+    </div>
+
     } @else {
 
-      <p>Carregando dúvida...</p>
+    <p>Carregando dúvida...</p>
 
     }
 
   </section>
-
-  <button
-    type="button"
-    (click)="editarDuvida()">
-    Editar
-  </button>
-
-  <aside class="relacionadas">
-
-    <h3>Relacionadas:</h3>
-
-    <!-- Será integrado quando o backend disponibilizar
-         os dados de dúvidas relacionadas. -->
-
-  </aside>
-
 </main>
