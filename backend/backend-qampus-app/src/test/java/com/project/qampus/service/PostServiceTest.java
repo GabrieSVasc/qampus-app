@@ -149,7 +149,7 @@ class PostServiceTest {
 
         RuntimeException e = assertThrows(
                 RuntimeException.class,
-                () -> postService.vote("post-404", VoteType.LIKE, user)
+                () -> postService.upvote("post-404", user)
         );
 
         assertEquals("post não encontrado", e.getMessage());
@@ -166,7 +166,7 @@ class PostServiceTest {
         when(post.getUpVotes()).thenReturn(5L);
         when(repository.save(post)).thenReturn(post);
 
-        assertSame(post, postService.vote("post-1", VoteType.LIKE, user));
+        assertSame(post, postService.upvote("post-1", user));
 
         verify(post).setUpVotes(6L);
         verify(voteRepository).save(any(Vote.class));
@@ -185,7 +185,7 @@ class PostServiceTest {
         when(post.getUpVotes()).thenReturn(5L);
         when(repository.save(post)).thenReturn(post);
 
-        assertSame(post, postService.vote("post-1", VoteType.LIKE, user));
+        assertSame(post, postService.upvote("post-1", user));
 
         verify(post).setUpVotes(4L);
         verify(voteRepository).delete(vote);
@@ -204,7 +204,7 @@ class PostServiceTest {
         when(post.getDownVotes()).thenReturn(3L);
         when(repository.save(post)).thenReturn(post);
 
-        assertSame(post, postService.vote("post-1", VoteType.DISLIKE, user));
+        assertSame(post, postService.downvote("post-1", user));
 
         verify(post).setDownVotes(2L);
         verify(voteRepository).delete(vote);
@@ -224,7 +224,7 @@ class PostServiceTest {
         when(post.getDownVotes()).thenReturn(2L);
         when(repository.save(post)).thenReturn(post);
 
-        assertSame(post, postService.vote("post-1", VoteType.DISLIKE, user));
+        assertSame(post, postService.downvote("post-1", user));
 
         verify(post).setUpVotes(4L);
         verify(post).setDownVotes(3L);
@@ -246,7 +246,7 @@ class PostServiceTest {
         when(post.getDownVotes()).thenReturn(2L);
         when(repository.save(post)).thenReturn(post);
 
-        assertSame(post, postService.vote("post-1", VoteType.LIKE, user));
+        assertSame(post, postService.upvote("post-1", user));
 
         verify(post).setUpVotes(6L);
         verify(post).setDownVotes(1L);
@@ -264,7 +264,7 @@ class PostServiceTest {
         when(post.getDownVotes()).thenReturn(3L);
         when(repository.save(post)).thenReturn(post);
 
-        assertSame(post, postService.vote("post-1", VoteType.DISLIKE, user));
+        assertSame(post, postService.downvote("post-1", user));
 
         verify(post).setDownVotes(4L);
         verify(voteRepository).save(any(Vote.class));

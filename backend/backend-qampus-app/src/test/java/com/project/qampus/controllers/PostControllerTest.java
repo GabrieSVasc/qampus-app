@@ -5,7 +5,6 @@ import com.project.qampus.model.Answer;
 import com.project.qampus.model.Post;
 import com.project.qampus.model.User;
 import com.project.qampus.model.enums.Role;
-import com.project.qampus.model.enums.VoteType;
 import com.project.qampus.service.AnswerService;
 import com.project.qampus.service.PostService;
 
@@ -226,7 +225,7 @@ class PostControllerTest {
         Post post = buildPost("post-1", "Post votado");
         post.setUpVotes(1L);
 
-        when(postService.vote("post-1", VoteType.LIKE, user))
+        when(postService.upvote("post-1", user))
                 .thenReturn(post);
 
         var response = postController.upvote("post-1", user);
@@ -234,7 +233,7 @@ class PostControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
 
-        verify(postService).vote("post-1", VoteType.LIKE, user);
+        verify(postService).upvote("post-1", user);
     }
 
     @Test
@@ -243,7 +242,7 @@ class PostControllerTest {
         Post post = buildPost("post-1", "Post votado negativamente");
         post.setDownVotes(1L);
 
-        when(postService.vote("post-1", VoteType.DISLIKE, user))
+        when(postService.downvote("post-1", user))
                 .thenReturn(post);
 
         var response = postController.downvote("post-1", user);
@@ -251,7 +250,7 @@ class PostControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
 
-        verify(postService).vote("post-1", VoteType.DISLIKE, user);
+        verify(postService).downvote("post-1", user);
     }
 
     @Test

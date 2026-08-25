@@ -76,16 +76,17 @@ public class PostService {
     }
 
     public void delete(String postId, User user) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Post não encontrado"));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post não encontrado"));
 
         if (!post.getUser().getId().equals(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Esse post pertence a outro usuário");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Esse post pertence a outro usuário");
         }
 
         postRepository.delete(post);
     }
 
-    public Post vote(String postId, VoteType type, User user) {
+    public Post upvote(String postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("post não encontrado"));
 
         Optional<Vote> existingVote = voteRepository.findByUserIdAndPostId(user.getId(), post.getId());
@@ -95,24 +96,15 @@ public class PostService {
             Vote vote = existingVote.get();
 
             // remover voto
-            if (vote.getType() == type) {
-                if (type == VoteType.LIKE) {
-                    post.setUpVotes(post.getUpVotes() - 1);
-                } else {
-                    post.setDownVotes(post.getDownVotes() - 1);
-                }
+            if (vote.getType() == VoteType.LIKE) {
+                post.setUpVotes(post.getUpVotes() - 1);
                 voteRepository.delete(vote);
             }
             // mudar voto
             else {
-                if (type == VoteType.LIKE) {
-                    post.setUpVotes(post.getUpVotes() + 1);
-                    post.setDownVotes(post.getDownVotes() - 1);
-                } else {
-                    post.setDownVotes(post.getDownVotes() + 1);
-                    post.setUpVotes(post.getUpVotes() - 1);
-                }
-                vote.setType(type);
+                post.setUpVotes(post.getUpVotes() + 1);
+                post.setDownVotes(post.getDownVotes() - 1);
+                vote.setType(VoteType.LIKE);
                 voteRepository.save(vote);
             }
         }
@@ -122,15 +114,46 @@ public class PostService {
 
             vote.setUser(user);
             vote.setPost(post);
-            vote.setType(type);
+            vote.setType(VoteType.LIKE);
 
             voteRepository.save(vote);
+            post.setUpVotes(post.getUpVotes() + 1);
+        }
+        return postRepository.save(post);
+    }
 
-            if (type == VoteType.LIKE) {
-                post.setUpVotes(post.getUpVotes() + 1);
-            } else {
-                post.setDownVotes(post.getDownVotes() + 1);
+    public Post downvote(String postId, User user) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("post não encontrado"));
+
+        Optional<Vote> existingVote = voteRepository.findByUserIdAndPostId(user.getId(), post.getId());
+
+        // Se já existir voto
+        if (existingVote.isPresent()) {
+            Vote vote = existingVote.get();
+
+            // remover voto
+            if (vote.getType() == VoteType.DISLIKE) {
+                post.setDownVotes(post.getDownVotes() - 1);
+                voteRepository.delete(vote);
             }
+            // mudar voto
+            else {
+                post.setDownVotes(post.getDownVotes() + 1);
+                post.setUpVotes(post.getUpVotes() - 1);
+                vote.setType(VoteType.DISLIKE);
+                voteRepository.save(vote);
+            }
+        }
+        // se nao votou
+        else {
+            Vote vote = new Vote();
+
+            vote.setUser(user);
+            vote.setPost(post);
+            vote.setType(VoteType.DISLIKE);
+
+            voteRepository.save(vote);
+            post.setDownVotes(post.getDownVotes() + 1);
         }
         return postRepository.save(post);
     }
@@ -153,6 +176,7 @@ public class PostService {
     }
 
     // The findByCategory method was redundant; removed.
-    // The explicit findAllOrderByVotes wrapper is also redundant; callers use findAll() directly.
+    // The explicit findAllOrderByVotes wrapper is also redundant; callers use
+    // findAll() directly.
 
 }

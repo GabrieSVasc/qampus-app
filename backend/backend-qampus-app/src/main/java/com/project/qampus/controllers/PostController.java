@@ -4,7 +4,6 @@ import com.project.qampus.dto.AnswerResponseDTO;
 import com.project.qampus.dto.PostDTO;
 import com.project.qampus.dto.PostResponseDTO;
 import com.project.qampus.model.Post;
-import com.project.qampus.model.enums.VoteType;
 import com.project.qampus.service.PostService;
 import com.project.qampus.service.AnswerService;
 
@@ -110,13 +109,13 @@ public class PostController {
     
     @PostMapping("/{id}/upvote")
     public ResponseEntity<PostResponseDTO> upvote(@PathVariable String id, @AuthenticationPrincipal User user){
-        Post post = postService.vote(id, VoteType.LIKE, user);
+        Post post = postService.upvote(id, user);
         return ResponseEntity.ok(PostResponseDTO.from(post));
     }
 
     @PostMapping("/{id}/downvote")
     public ResponseEntity<PostResponseDTO> downvote(@PathVariable String id, @AuthenticationPrincipal User user){
-        Post post = postService.vote(id, VoteType.DISLIKE, user);
+        Post post = postService.downvote(id, user);
         return ResponseEntity.ok(PostResponseDTO.from(post));
     }
 
