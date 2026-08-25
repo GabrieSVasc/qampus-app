@@ -15,7 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import com.project.qampus.model.User;
 
 @RestController
@@ -32,7 +31,6 @@ public class AnswerController {
             @PathVariable String postId,
             @Valid @RequestBody AnswerDTO body,
             Authentication authentication) {
-                System.out.println("entrou");
         Answer answer = answerService.create(
                 postId,
                 body,
@@ -71,7 +69,7 @@ public class AnswerController {
     public ResponseEntity<Void> deleteAnswer(@PathVariable String answerId, @PathVariable String postId, 
                                              @AuthenticationPrincipal User user) {
 
-        answerService.delete(postId, answerId, user);
+        answerService.delete(answerId, user);
 
         return ResponseEntity.noContent().build();
     }

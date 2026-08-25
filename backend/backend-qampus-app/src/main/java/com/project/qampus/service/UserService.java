@@ -13,13 +13,24 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private static final String USER_NOT_FOUND = "Usuário não encontrado";
+
     private final UserRepository userRepository;
 
     public User update(String userId, UserDTO body, User user) {
-        User userFinal = userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        User userFinal = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        USER_NOT_FOUND
+                ));
 
         if (!userFinal.getId().equals(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Esse usuário pertence a outro usuário");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Esse usuário pertence a outro usuário"
+            );
         }
 
         userFinal.setName(body.name());
@@ -30,22 +41,38 @@ public class UserService {
     }
 
     public void delete(String userId, User user) {
-        User userFinal = userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        User userFinal = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        USER_NOT_FOUND
+                ));
 
         if (!userFinal.getId().equals(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Esse usuário pertence a outro usuário");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Esse usuário pertence a outro usuário"
+            );
         }
 
         userRepository.delete(userFinal);
     }
-    
+
     public User findById(String userId) {
-        return userRepository.findById(userId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado"));
+
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        USER_NOT_FOUND
+                ));
     }
 
-    public User findByEmail(String email){
-        User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        return user;
+    public User findByEmail(String email) {
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        USER_NOT_FOUND
+                ));
     }
 }
