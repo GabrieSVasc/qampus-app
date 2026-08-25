@@ -124,7 +124,7 @@ class AnswerServiceTest {
                         exception.getStatusCode());
 
                 assertEquals(
-                        "Post não encontrado",
+                        "Resposta não encontrada",
                         exception.getReason());
 
                 verify(postRepository)
