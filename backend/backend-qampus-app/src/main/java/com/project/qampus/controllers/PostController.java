@@ -45,7 +45,9 @@ public class PostController {
 
     @GetMapping("/search")
     public ResponseEntity<List<PostResponseDTO>> searchPosts(@RequestParam String busca) {
+
         List<PostResponseDTO> posts = postService.searchPost(busca).stream().map(PostResponseDTO::from).toList();
+
         return ResponseEntity.ok(posts);
     }
 
@@ -132,5 +134,4 @@ public class PostController {
 
         return ResponseEntity.ok(answers);
     }
-
 }

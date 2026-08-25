@@ -49,7 +49,8 @@ describe('Duvida', () => {
     upvotePost: vi.fn(),
     downvotePost: vi.fn(),
     upvoteAnswer: vi.fn(),
-    downvoteAnswer: vi.fn()
+    downvoteAnswer: vi.fn(),
+    editAnswer: vi.fn()
   };
 
   beforeEach(async () => {
@@ -66,6 +67,8 @@ describe('Duvida', () => {
       ...postMock,
       tags: postMock.tags.map(tag => ({ ...tag }))
     });
+
+    postServiceMock.getAnswersPost.mockResolvedValue([]);
 
     postServiceMock.createAnswer.mockResolvedValue({
       ...respostaMock
@@ -206,6 +209,10 @@ describe('Duvida', () => {
 
     expect(postServiceMock.upvotePost).not.toHaveBeenCalled();
     expect(postServiceMock.downvotePost).not.toHaveBeenCalled();
+    expect(routerMock.navigate).toHaveBeenCalledWith([
+      '/post',
+      '3'
+    ]);
   });
 
   it('should not allow an empty response', async () => {
