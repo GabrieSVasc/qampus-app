@@ -59,7 +59,7 @@ public class AnswerController {
     public ResponseEntity<AnswerResponseDTO> updateAnswer(@PathVariable String answerId, @PathVariable String postId, 
                          @Valid @RequestBody AnswerDTO body, @AuthenticationPrincipal User user) {
         
-        Answer newAnswer = answerService.update(postId, answerId, body, user);
+        Answer newAnswer = answerService.update(answerId, body, user);
 
         return ResponseEntity.ok(AnswerResponseDTO.from(newAnswer));
     }
