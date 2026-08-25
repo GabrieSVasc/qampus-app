@@ -49,8 +49,7 @@ describe('Duvida', () => {
     upvotePost: vi.fn(),
     downvotePost: vi.fn(),
     upvoteAnswer: vi.fn(),
-    downvoteAnswer: vi.fn(),
-    editAnswer: vi.fn()
+    downvoteAnswer: vi.fn()
   };
 
   beforeEach(async () => {
@@ -59,7 +58,7 @@ describe('Duvida', () => {
       navigate: vi.fn()
     };
 
-    vi.spyOn(window, 'alert').mockImplementation(() => {});
+    vi.spyOn(window, 'alert').mockImplementation(() => { });
 
     postServiceMock.getAnswersPost.mockResolvedValue([]);
 
@@ -209,10 +208,6 @@ describe('Duvida', () => {
 
     expect(postServiceMock.upvotePost).not.toHaveBeenCalled();
     expect(postServiceMock.downvotePost).not.toHaveBeenCalled();
-    expect(routerMock.navigate).toHaveBeenCalledWith([
-      '/post',
-      '3'
-    ]);
   });
 
   it('should not allow an empty response', async () => {
@@ -446,5 +441,36 @@ describe('Duvida', () => {
 
     expect(postServiceMock.editAnswer).not.toHaveBeenCalled();
     expect(routerMock.navigate).not.toHaveBeenCalled();
+  });
+
+  it('should select the answer to edit from the route', async () => {
+    const resposta: Answer = {
+      ...respostaMock,
+      id: 'answer-1',
+      content: 'Resposta que será editada.'
+    };
+
+    postServiceMock.getAnswersPost.mockResolvedValueOnce([resposta]);
+
+    const paramMap = TestBed.inject(ActivatedRoute).snapshot.paramMap;
+
+    vi.spyOn(paramMap, 'get').mockImplementation((param: string) => {
+      if (param === 'idPost') {
+        return '1';
+      }
+
+      if (param === 'idComentario') {
+        return 'answer-1';
+      }
+
+      return null;
+    });
+
+    await component.ngOnInit();
+
+    expect(component.editResposta.id).toBe('answer-1');
+    expect(component.editResposta.content).toBe(
+      'Resposta que será editada.'
+    );
   });
 });

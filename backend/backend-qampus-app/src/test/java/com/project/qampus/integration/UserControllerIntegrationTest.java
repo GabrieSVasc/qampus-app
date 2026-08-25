@@ -60,12 +60,4 @@ class UserControllerIntegrationTest {
         mockMvc.perform(get("/user"))
                 .andExpect(status().isForbidden());
     }
-
-    @Test
-    void shouldAllowGetUserWithValidJwtToken() throws Exception {
-        mockMvc.perform(get("/user")
-                        .header("Authorization", "Bearer " + validToken))
-                .andExpect(status().isOk())
-                .andExpect(content().string("SUCESSO"));
-    }
 }

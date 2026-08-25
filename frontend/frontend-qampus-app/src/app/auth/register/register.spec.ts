@@ -18,11 +18,11 @@ describe('Register', () => {
   beforeEach(async () => {
     authServiceMock = {
       register: vi.fn(),
-    }
+    };
 
     routerMock = {
       navigate: vi.fn(),
-    }
+    };
 
     await TestBed.configureTestingModule({
       imports: [Register],
@@ -40,40 +40,39 @@ describe('Register', () => {
 
     fixture = TestBed.createComponent(Register);
     component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
-  it('should call AuthService register with the new user', async()=>{
+  it('should call AuthService register with the new user', async () => {
     authServiceMock.register.mockResolvedValue(true);
     component.registerForm.setValue({
-        name: "Nome de Teste",
-        email: "teste@email.com",
-        password: "senha123",
-        confirmPassword: "senha123",
-        role: "STUDENT"
+      name: "Nome de Teste",
+      email: "teste@email.com",
+      password: "senha123",
+      confirmPassword: "senha123",
+      role: "STUDENT"
     })
     await component.submit();
-     const user: User = {
-        name: "Nome de Teste",
-        email: "teste@email.com",
-        password: "senha123",
-        role: "STUDENT"
-      }
+    const user: User = {
+      name: "Nome de Teste",
+      email: "teste@email.com",
+      password: "senha123",
+      role: "STUDENT"
+    }
     expect(authServiceMock.register).toHaveBeenCalledWith(user);
   })
 
-  it('should show an alert when register fails', async()=>{
+  it('should show an alert when register fails', async () => {
     authServiceMock.register.mockResolvedValue(false);
     const alertMock = vi
       .spyOn(window, 'alert')
-      .mockImplementation(()=>{});
-    
+      .mockImplementation(() => { });
+
     component.registerForm.setValue({
-        name: "Nome de Teste",
-        email: "emailRepetido@email.com",
-        password: "senha123",
-        confirmPassword: "senha123",
-        role: "STUDENT"
+      name: "Nome de Teste",
+      email: "emailRepetido@email.com",
+      password: "senha123",
+      confirmPassword: "senha123",
+      role: "STUDENT"
     })
 
     await component.submit();
@@ -81,8 +80,22 @@ describe('Register', () => {
     alertMock.mockRestore();
   })
 
-  it('should navigate to the route', ()=>{
+  it('should navigate to the route', () => {
     component.goTo("login");
     expect(routerMock.navigate).toHaveBeenCalledWith(['login']);
   })
+
+  it('should show name error when name is empty and submit was clicked', () => {
+    component.submitClicked = true;
+    component.registerForm.controls.name.setValue('');
+
+    fixture.detectChanges();
+
+    const alert = fixture.nativeElement.querySelector(
+      '.alert'
+    ) as HTMLElement;
+
+    expect(alert).not.toBeNull();
+    expect(alert.textContent).toContain('Digite o nome');
+  });
 });

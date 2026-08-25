@@ -240,6 +240,7 @@ export class PostService {
         content: content
       })
     })
+
     return response.ok;
   }
 }
