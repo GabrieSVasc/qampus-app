@@ -25,7 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 @RequiredArgsConstructor
 public class AnswerService {
-
+    private static final String ANSWER_NOT_FOUND = "Resposta não encontrada";
     private final AnswerRepository answerRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -39,7 +39,7 @@ public class AnswerService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Post não encontrado"
+                        ANSWER_NOT_FOUND
                 ));
 
         User user = (User) authentication.getPrincipal();
@@ -65,7 +65,7 @@ public class AnswerService {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Resposta não encontrada"
+                        ANSWER_NOT_FOUND
                 ));
 
         Optional<Vote> existingVote =
@@ -152,7 +152,6 @@ public class AnswerService {
     }
 
     public Answer update(
-            String postId,
             String answerId,
             AnswerDTO body,
             @AuthenticationPrincipal User user) {
@@ -160,7 +159,7 @@ public class AnswerService {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Resposta não encontrada"
+                        ANSWER_NOT_FOUND
                 ));
 
         if (!answer.getUser().getId().equals(user.getId())) {
@@ -182,7 +181,7 @@ public class AnswerService {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Resposta não encontrada"
+                        ANSWER_NOT_FOUND
                 ));
 
         if (!answer.getUser().getId().equals(user.getId())) {
