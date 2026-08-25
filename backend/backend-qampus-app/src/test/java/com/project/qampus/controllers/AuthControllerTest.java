@@ -64,7 +64,7 @@ class AuthControllerTest {
         when(passwordEncoder.matches("password123", "encoded_pass")).thenReturn(true);
         when(tokenService.generateToken(existingUser)).thenReturn("jwt.token.here");
 
-        ResponseEntity response = authController.login(loginDTO);
+        ResponseEntity<ResponseDTO> response = authController.login(loginDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -80,7 +80,7 @@ class AuthControllerTest {
         when(userRepository.findByEmail(loginDTO.email())).thenReturn(Optional.of(existingUser));
         when(passwordEncoder.matches("wrongpass", "encoded_pass")).thenReturn(false);
 
-        ResponseEntity response = authController.login(loginDTO);
+        ResponseEntity<ResponseDTO> response = authController.login(loginDTO);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }

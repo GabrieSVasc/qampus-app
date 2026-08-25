@@ -1,8 +1,6 @@
 package com.project.qampus.controllers;
 
-import com.project.qampus.dto.AnswerResponseDTO;
 import com.project.qampus.dto.PostDTO;
-import com.project.qampus.dto.PostResponseDTO;
 import com.project.qampus.model.Answer;
 import com.project.qampus.model.Post;
 import com.project.qampus.model.User;
@@ -11,7 +9,6 @@ import com.project.qampus.model.enums.VoteType;
 import com.project.qampus.service.AnswerService;
 import com.project.qampus.service.PostService;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +22,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

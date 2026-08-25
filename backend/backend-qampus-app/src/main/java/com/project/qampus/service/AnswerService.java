@@ -11,7 +11,6 @@ import com.project.qampus.model.Vote;
 import com.project.qampus.model.enums.VoteType;
 import com.project.qampus.repositories.AnswerRepository;
 import com.project.qampus.repositories.PostRepository;
-import com.project.qampus.repositories.UserRepository;
 import com.project.qampus.repositories.VoteRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ public class AnswerService {
     private static final String ANSWER_NOT_FOUND = "Resposta não encontrada";
     private final AnswerRepository answerRepository;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private final VoteRepository voteRepository;
 
     public Answer create(

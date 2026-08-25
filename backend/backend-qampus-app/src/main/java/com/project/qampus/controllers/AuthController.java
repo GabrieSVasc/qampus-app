@@ -33,7 +33,7 @@ public class AuthController {
     private final BlacklistedTokenRepository blacklistRepository;
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequestDTO body){
+    public ResponseEntity<ResponseDTO> login(@RequestBody LoginRequestDTO body){
         User user = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("User not found"));
 
         if(passwordEncoder.matches(body.password(), user.getPassword())){
