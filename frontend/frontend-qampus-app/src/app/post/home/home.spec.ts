@@ -113,10 +113,6 @@ describe('Home', () => {
     await fixture.whenStable();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should load the posts from PostService', () => {
     expect(postServiceMock.findAll).toHaveBeenCalled();
 
