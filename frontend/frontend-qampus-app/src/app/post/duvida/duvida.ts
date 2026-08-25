@@ -39,21 +39,31 @@ export class Duvida implements OnInit {
     if (!idPost) {
       return;
     }
-    this.editResposta.id = idAnswer!;
+
+    this.editResposta.id = idAnswer ?? '';
 
     try {
-      const resps = await this.postService.getAnswersPost(idPost);
+      const [post, resps] = await Promise.all([
+        this.postService.findById(idPost),
+        this.postService.getAnswersPost(idPost)
+      ]);
+
+      this.post = post;
+
       if (resps) {
         this.respostas = resps;
+
         if (idAnswer) {
-          this.respostas.forEach(resposta => {
-            if (resposta.id == this.editResposta.id) {
-              this.editResposta = resposta;
-            }
-          });
+          const respostaEncontrada = this.respostas.find(
+            resposta => resposta.id === idAnswer
+          );
+
+          if (respostaEncontrada) {
+            this.editResposta = respostaEncontrada;
+          }
         }
       }
-      this.post = await this.postService.findById(idPost);
+
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Erro ao carregar dúvida:', error);
@@ -136,5 +146,9 @@ export class Duvida implements OnInit {
         alert("Não foi possível editar o comentário")
       }
     }
+  }
+
+  visualizarRelacionada(id: string): void {
+    this.router.navigate(['/post', id]);
   }
 }

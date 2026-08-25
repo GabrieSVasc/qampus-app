@@ -61,6 +61,25 @@ export class PostService {
     return await response.json();
   }
 
+  async searchPosts(busca: string): Promise<Post[]> {
+    const response = await fetch(
+      `${this.apiUrl}/search?busca=${encodeURIComponent(busca)}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar dúvidas');
+    }
+
+    return await response.json();
+  }
+
   async createPost(post: NewPost) {
     try {
       const response = await fetch(this.apiUrl + "/create", {

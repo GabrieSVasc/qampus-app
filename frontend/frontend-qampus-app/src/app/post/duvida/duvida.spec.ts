@@ -34,14 +34,18 @@ describe('Duvida', () => {
 
   const postServiceMock = {
     findById: vi.fn(),
+    getAnswersPost: vi.fn(),
     createAnswer: vi.fn(),
     upvotePost: vi.fn(),
     downvotePost: vi.fn(),
     upvoteAnswer: vi.fn(),
-    downvoteAnswer: vi.fn()
+    downvoteAnswer: vi.fn(),
+    editAnswer: vi.fn()
   };
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     routerMock = {
       navigate: vi.fn(),
     };
@@ -50,6 +54,8 @@ describe('Duvida', () => {
       ...postMock,
       tags: postMock.tags.map(tag => ({ ...tag }))
     });
+
+    postServiceMock.getAnswersPost.mockResolvedValue([]);
 
     postServiceMock.createAnswer.mockResolvedValue({
       id: 'answer-1',
@@ -105,7 +111,13 @@ describe('Duvida', () => {
           useValue: {
             snapshot: {
               paramMap: {
-                get: vi.fn().mockReturnValue('1'),
+                get: vi.fn((param: string) => {
+                  if (param === 'idPost') {
+                    return '1';
+                  }
+
+                  return null;
+                }),
               },
             },
           },
@@ -170,7 +182,7 @@ describe('Duvida', () => {
     component.visualizarRelacionada('3');
 
     expect(routerMock.navigate).toHaveBeenCalledWith([
-      '/duvida',
+      '/post',
       '3'
     ]);
   });
@@ -178,7 +190,7 @@ describe('Duvida', () => {
   it('should not allow an empty response', async () => {
     component.novaResposta = '   ';
 
-    component.responder();
+    await component.responder();
 
     expect(postServiceMock.createAnswer).not.toHaveBeenCalled();
     expect(component.novaResposta).toBe('   ');

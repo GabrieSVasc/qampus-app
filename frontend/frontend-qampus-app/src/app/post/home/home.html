@@ -3,27 +3,36 @@
 <div class="home-container">
   <section class="home-actions">
     <div class="filters">
+
       <p class="recent-title">Mais Recentes:</p>
+
+      <input
+        type="text"
+        [(ngModel)]="termoBusca"
+        (input)="aplicarFiltros()"
+        placeholder="Buscar dúvidas..."
+        class="search-input">
+
       <p class="filter-title">Filtradas por interesses:</p>
 
       <div class="filter-options">
 
-        <label>
-          <input type="checkbox" checked>
-          CURSO
-        </label>
+        @for (tag of getTagsDisponiveis(); track tag) {
 
-        <label>
-          <input type="checkbox" checked>
-          TURMA 1
-        </label>
+          <label>
+            <input
+              type="checkbox"
+              (change)="alterarFiltroTag(tag, $event)">
 
-        <label>
-          <input type="checkbox" checked>
-          TURMA 2
-        </label>
+            {{ tag }}
+          </label>
+
+        }
+
       </div>
+
     </div>
+
     <button
       type="button"
       class="question-button"
@@ -31,7 +40,7 @@
       Fazer Pergunta
     </button>
   </section>
-  @for (duvida of duvidas; track duvida.id) {
+  @for (duvida of duvidasFiltradas; track duvida.id) {
 
     <article
       class="duvida-card"
