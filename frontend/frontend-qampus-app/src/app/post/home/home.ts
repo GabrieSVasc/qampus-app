@@ -31,10 +31,7 @@ export class Home implements OnInit {
     try {
       this.duvidas = await this.postService.findAll();
 
-      this.duvidas = [...this.duvidas].sort((a, b) =>
-        new Date(b.createdAt).getTime() -
-        new Date(a.createdAt).getTime()
-      );
+      this.duvidas = this.ordenarPorMaisRecente(this.duvidas);
 
       this.duvidasFiltradas = [...this.duvidas];
 
@@ -65,6 +62,8 @@ export class Home implements OnInit {
         );
       }
 
+      resultado = this.ordenarPorMaisRecente(resultado);
+
       this.duvidasFiltradas = resultado;
 
       this.cdr.detectChanges();
@@ -93,6 +92,13 @@ export class Home implements OnInit {
     );
 
     return [...new Set(tags)];
+  }
+
+  ordenarPorMaisRecente(posts: Post[]): Post[] {
+    return [...posts].sort((a, b) =>
+      new Date(b.createdAt).getTime() -
+      new Date(a.createdAt).getTime()
+    );
   }
 
   logout(): void {
