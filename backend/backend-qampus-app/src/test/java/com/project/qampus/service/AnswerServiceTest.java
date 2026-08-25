@@ -16,7 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -100,28 +102,33 @@ class AnswerServiceTest {
                 verifyNoInteractions(userRepository);
         }
 
+
         @Test
         void shouldThrowExceptionWhenPostDoesNotExist() {
 
                 AnswerDTO dto = new AnswerDTO(
-                                "Minha resposta.");
+                        "Minha resposta.");
 
                 when(postRepository.findById("post-1"))
-                                .thenReturn(Optional.empty());
+                        .thenReturn(Optional.empty());
 
-                RuntimeException exception = assertThrows(
-                                RuntimeException.class,
-                                () -> answerService.create(
-                                                "post-1",
-                                                dto,
-                                                authentication));
+                ResponseStatusException exception = assertThrows(
+                        ResponseStatusException.class,
+                        () -> answerService.create(
+                                "post-1",
+                                dto,
+                                authentication));
 
                 assertEquals(
-                                "Post not found... x.x",
-                                exception.getMessage());
+                        HttpStatus.NOT_FOUND,
+                        exception.getStatusCode());
+
+                assertEquals(
+                        "Post não encontrado",
+                        exception.getReason());
 
                 verify(postRepository)
-                                .findById("post-1");
+                        .findById("post-1");
 
                 verifyNoInteractions(userRepository);
                 verifyNoInteractions(answerRepository);
@@ -132,33 +139,37 @@ class AnswerServiceTest {
         void shouldThrowExceptionWhenAuthenticatedUserDoesNotExist() {
 
                 AnswerDTO dto = new AnswerDTO(
-                                "Minha resposta.");
+                        "Minha resposta.");
 
                 when(postRepository.findById("post-1"))
-                                .thenReturn(Optional.of(post));
+                        .thenReturn(Optional.of(post));
 
                 when(authentication.getPrincipal())
-                                .thenReturn(null);
+                        .thenReturn(null);
 
-                RuntimeException exception = assertThrows(
-                                RuntimeException.class,
-                                () -> answerService.create(
-                                                "post-1",
-                                                dto,
-                                                authentication));
+                ResponseStatusException exception = assertThrows(
+                        ResponseStatusException.class,
+                        () -> answerService.create(
+                                "post-1",
+                                dto,
+                                authentication));
 
                 assertEquals(
-                                "Usuário não encontrado.",
-                                exception.getMessage());
+                        HttpStatus.NOT_FOUND,
+                        exception.getStatusCode());
+
+                assertEquals(
+                        "Usuário não encontrado",
+                        exception.getReason());
 
                 verify(postRepository)
-                                .findById("post-1");
+                        .findById("post-1");
 
                 verify(authentication)
-                                .getPrincipal();
+                        .getPrincipal();
 
                 verify(answerRepository, never())
-                                .save(any(Answer.class));
+                        .save(any(Answer.class));
 
                 verifyNoInteractions(userRepository);
         }
@@ -166,20 +177,25 @@ class AnswerServiceTest {
         @Test
         void shouldThrowExceptionWhenAnswerDoesNotExist() {
                 when(answerRepository.findById(("answer-404")))
-                                .thenReturn(Optional.empty());
-                RuntimeException exception = assertThrows(
-                                RuntimeException.class,
-                                () -> answerService.vote(
-                                                "answer-404",
-                                                VoteType.LIKE,
-                                                user));
+                        .thenReturn(Optional.empty());
+
+                ResponseStatusException exception = assertThrows(
+                        ResponseStatusException.class,
+                        () -> answerService.vote(
+                                "answer-404",
+                                VoteType.LIKE,
+                                user));
 
                 assertEquals(
-                                "resposta não encontrada",
-                                exception.getMessage());
+                        HttpStatus.NOT_FOUND,
+                        exception.getStatusCode());
+
+                assertEquals(
+                        "Resposta não encontrada",
+                        exception.getReason());
 
                 verify(answerRepository)
-                                .findById("answer-404");
+                        .findById("answer-404");
 
                 verifyNoInteractions(voteRepository);
         }
