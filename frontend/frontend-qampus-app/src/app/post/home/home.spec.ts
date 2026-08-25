@@ -273,4 +273,30 @@ describe('Home', () => {
       'TURMA 1'
     ]);
   });
+
+  it('should keep filtered posts ordered from newest to oldest', async () => {
+    component.tagsSelecionadas = ['CURSO'];
+
+    await component.aplicarFiltros();
+
+    expect(component.duvidasFiltradas.length).toBe(2);
+    expect(component.duvidasFiltradas[0].id).toBe('2');
+    expect(component.duvidasFiltradas[1].id).toBe('1');
+  });
+
+  it('should order search results from newest to oldest', async () => {
+    postServiceMock.searchPosts.mockResolvedValue([
+      postsMock[0],
+      postsMock[2],
+      postsMock[1]
+    ]);
+
+    component.termoBusca = 'disciplinas';
+
+    await component.aplicarFiltros();
+
+    expect(component.duvidasFiltradas[0].id).toBe('3');
+    expect(component.duvidasFiltradas[1].id).toBe('2');
+    expect(component.duvidasFiltradas[2].id).toBe('1');
+  });
 });
