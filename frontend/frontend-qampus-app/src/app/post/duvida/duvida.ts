@@ -16,6 +16,8 @@ export class Duvida implements OnInit {
 
   novaResposta = '';
 
+  relacionadas: Post[] = [];
+
   respostas: Answer[] = [];
   editResposta: Answer = {
     id: '',
@@ -32,26 +34,35 @@ export class Duvida implements OnInit {
     private cdr: ChangeDetectorRef
   ) { }
 
-  async ngOnInit() {
-    const idPost = this.route.snapshot.paramMap.get('idPost');
-    const idAnswer = this.route.snapshot.paramMap.get('idComentario');
+  async ngOnInit(): Promise<void> {
+    this.route.paramMap.subscribe(async params => {
+      const idPost = params.get('idPost');
+      const idAnswer = params.get('idComentario');
 
-    if (!idPost) {
-      return;
-    }
+      if (!idPost) {
+        return;
+      }
 
-    this.editResposta.id = idAnswer ?? '';
+      this.post = null;
+      this.respostas = [];
 
-    try {
-      const [post, resps] = await Promise.all([
-        this.postService.findById(idPost),
-        this.postService.getAnswersPost(idPost)
-      ]);
+      this.editResposta = {
+        id: idAnswer ?? '',
+        content: '',
+        postId: '',
+        createdAt: '',
+        downVotes: 0,
+        upVotes: 0
+      };
 
-      this.post = post;
+      try {
+        const [post, resps] = await Promise.all([
+          this.postService.findById(idPost),
+          this.postService.getAnswersPost(idPost)
+        ]);
 
-      if (resps) {
-        this.respostas = resps;
+        this.post = post;
+        this.respostas = resps ?? [];
 
         if (idAnswer) {
           const respostaEncontrada = this.respostas.find(
@@ -62,12 +73,15 @@ export class Duvida implements OnInit {
             this.editResposta = respostaEncontrada;
           }
         }
-      }
 
-      this.cdr.detectChanges();
-    } catch (error) {
-      console.error('Erro ao carregar dúvida:', error);
-    }
+        this.relacionadas = await this.postService.findAll();
+
+        this.cdr.detectChanges();
+
+      } catch (error) {
+        console.error('Erro ao carregar dúvida:', error);
+      }
+    });
   }
 
   async votar(valor: number): Promise<void> {
@@ -149,6 +163,6 @@ export class Duvida implements OnInit {
   }
 
   visualizarRelacionada(id: string): void {
-    this.router.navigate(['/post', id]);
+    this.router.navigate(['/post/' + id]);
   }
 }

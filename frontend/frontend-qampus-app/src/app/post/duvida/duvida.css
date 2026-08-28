@@ -201,3 +201,61 @@
 .responder-area button:hover {
   opacity: 0.9;
 }
+
+.relacionadas {
+  width: 250px;
+
+  border: 1px solid #555;
+
+  border-radius: 4px;
+
+  background-color: #f1eeeb;
+
+  padding: 10px;
+
+  margin-top: 50px;
+}
+
+
+.relacionadas h3 {
+  margin: 0 0 10px;
+
+  font-size: large;
+
+  font-weight: 400;
+}
+
+
+.relacionada {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+.related-votes {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #777;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: medium;
+  flex-shrink: 0;
+}
+
+.related-title {
+  font-size: medium;
+  line-height: 1.1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+.relacionada:last-child {
+  border-bottom: none;
+}
