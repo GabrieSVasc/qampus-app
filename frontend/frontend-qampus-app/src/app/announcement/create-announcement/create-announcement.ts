@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {AnnouncementService, NewAnnouncement} from '../announcement-service';
+import { AnnouncementService, NewAnnouncement} from '../announcement-service';
 import { Navbar } from '../../navbar/navbar';
 
 @Component({

@@ -1,22 +1,23 @@
 <header class="header">
+
     <h1
-        style="padding-left: 50px; cursor: pointer;"
+        class="logo"
         (click)="goTo('home')">
         Qampus
     </h1>
 
-    <div class="header-actions">
+    <div class="nav-actions">
 
         <button
-            (click)="goTo('anuncios')"
-            class="announcement-button">
+            class="nav-button"
+            (click)="goTo('anuncios')">
             Anúncios
         </button>
 
         @if (isProfessor()) {
             <button
-                (click)="goTo('anuncios/criar')"
-                class="announcement-button">
+                class="nav-button"
+                (click)="goTo('anuncios/criar')">
                 Publicar anúncio
             </button>
         }
@@ -33,6 +34,7 @@
 
         @if (menuAberto) {
             <div class="dropdown">
+
                 <button
                     (click)="goTo('perfil')"
                     class="dropdown-perfil dropdown-button">
@@ -44,7 +46,9 @@
                     class="dropdown-deslogar">
                     Deslogar
                 </button>
+
             </div>
         }
     </div>
+
 </header>

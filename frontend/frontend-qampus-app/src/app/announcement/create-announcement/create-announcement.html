@@ -1,0 +1,102 @@
+<app-navbar></app-navbar>
+
+<main class="create-announcement-container">
+
+  <section class="create-announcement-card">
+
+    <h1>Publicar anúncio</h1>
+
+    <p class="subtitle">
+      Publique informações acadêmicas importantes para os alunos.
+    </p>
+
+    <form (ngSubmit)="publish()">
+
+      <div class="form-group">
+
+        <label for="title">
+          Título
+        </label>
+
+        <input
+          id="title"
+          type="text"
+          [(ngModel)]="announcement.title"
+          name="title"
+          placeholder="Digite o título do anúncio">
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="type">
+          Tipo do anúncio
+        </label>
+
+        <select
+          id="type"
+          [(ngModel)]="announcement.type"
+          name="type">
+
+          <option value="" disabled>
+            Selecione o tipo
+          </option>
+
+          <option value="AVISO">
+            Aviso
+          </option>
+
+          <option value="EVENTO">
+            Evento
+          </option>
+
+          <option value="INFORMATIVO">
+            Informativo
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="description">
+          Descrição
+        </label>
+
+        <textarea
+          id="description"
+          [(ngModel)]="announcement.description"
+          name="description"
+          placeholder="Digite as informações do anúncio"
+          rows="6">
+        </textarea>
+
+      </div>
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="cancel-button"
+          (click)="cancel()">
+
+          Cancelar
+
+        </button>
+
+        <button
+          type="submit"
+          class="publish-button">
+
+          Publicar anúncio
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </section>
+
+</main>
