@@ -1,11 +1,49 @@
 <header class="header">
-    <h1 style="padding-left: 50px; cursor: pointer;" (click)="goTo('home')">Qampus</h1>
+    <h1
+        style="padding-left: 50px; cursor: pointer;"
+        (click)="goTo('home')">
+        Qampus
+    </h1>
+
+    <div class="header-actions">
+
+        <button
+            (click)="goTo('anuncios')"
+            class="announcement-button">
+            Anúncios
+        </button>
+
+        @if (isProfessor()) {
+            <button
+                (click)="goTo('anuncios/criar')"
+                class="announcement-button">
+                Publicar anúncio
+            </button>
+        }
+
+    </div>
+
     <div class="user-menu">
-        <img src="/user-logo.png" style="cursor: pointer;" width="40" height="40" (click)="toggleMenu()">
+        <img
+            src="/user-logo.png"
+            style="cursor: pointer;"
+            width="40"
+            height="40"
+            (click)="toggleMenu()">
+
         @if (menuAberto) {
             <div class="dropdown">
-                <button (click)="goTo('perfil')" class="dropdown-perfil dropdown-button">Meu Perfil</button>
-                <button (click)="logout()" class="dropdown-deslogar">Deslogar</button>
+                <button
+                    (click)="goTo('perfil')"
+                    class="dropdown-perfil dropdown-button">
+                    Meu Perfil
+                </button>
+
+                <button
+                    (click)="logout()"
+                    class="dropdown-deslogar">
+                    Deslogar
+                </button>
             </div>
         }
     </div>

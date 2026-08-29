@@ -68,7 +68,8 @@ describe('Home', () => {
   };
 
   const authServiceMock = {
-    logout: vi.fn()
+    logout: vi.fn(),
+    hasRole: vi.fn().mockReturnValue(false)
   };
 
   beforeEach(async () => {
