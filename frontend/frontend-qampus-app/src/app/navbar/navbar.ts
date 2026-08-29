@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { AuthService } from '../auth/auth-service';
 import { Router } from '@angular/router';
-import { HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-navbar',
@@ -9,37 +8,43 @@ import { HostListener } from '@angular/core';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-
 export class Navbar {
+
+  menuAberto = false;
+
   constructor(
     private authService: AuthService,
     private router: Router
-  ){}
+  ) {}
 
-  menuAberto = false;
-  
-  toggleMenu(){
+  toggleMenu(): void {
     this.menuAberto = !this.menuAberto;
   }
 
   @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent){
+  onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    if(!target.closest('.user-menu')){
+
+    if (!target.closest('.user-menu')) {
       this.menuAberto = false;
     }
   }
 
-  async logout(){
+  isProfessor(): boolean {
+    return this.authService.hasRole('PROFESSOR');
+  }
+
+  async logout(): Promise<void> {
     const resposta = await this.authService.logout();
-    if(resposta){
+
+    if (resposta) {
       this.router.navigate(['/login']);
-    }else{
-      alert("Erro ao realizar o logout");
+    } else {
+      alert('Erro ao realizar o logout');
     }
   }
 
-  goTo(rota: string){
+  goTo(rota: string): void {
     this.router.navigate([rota]);
   }
 }

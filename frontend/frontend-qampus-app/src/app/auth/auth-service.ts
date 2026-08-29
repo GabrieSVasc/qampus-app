@@ -96,4 +96,20 @@ export class AuthService {
       return false;
     }
   }
+
+  getRole(): string | null {
+    const token = this.getToken();
+
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.role ?? null;
+    } catch (error) {
+      console.error('Token error: ', error);
+      return null;
+    }
+  }
 }

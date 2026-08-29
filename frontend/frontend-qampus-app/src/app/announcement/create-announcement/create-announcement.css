@@ -1,0 +1,74 @@
+.create-announcement-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 35px 20px;
+  margin-top: 80px;
+}
+
+.create-announcement-card {
+  padding: 30px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  background-color: #f1eeeb;
+}
+
+.create-announcement-card h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 0 0 30px;
+  font-size: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  font-size: 16px;
+  font-family: inherit;
+  background-color: white;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-button,
+.publish-button {
+  border: none;
+  border-radius: 5px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.cancel-button {
+  background-color: #cccccc;
+}
+
+.publish-button {
+  background-color: #73aeb2;
+  color: white;
+}

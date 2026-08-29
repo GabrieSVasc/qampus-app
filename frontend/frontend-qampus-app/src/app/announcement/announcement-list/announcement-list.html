@@ -1,0 +1,49 @@
+<app-navbar></app-navbar>
+
+<main class="announcement-container">
+
+  <div class="announcement-header">
+    <h1>Anúncios Acadêmicos</h1>
+    <p>
+      Confira os avisos e informações acadêmicas mais recentes.
+    </p>
+  </div>
+
+  <section class="announcement-list">
+
+    @for (announcement of announcements; track announcement.id) {
+
+      <article class="announcement-card">
+
+        <div class="announcement-type">
+          {{ announcement.type }}
+        </div>
+
+        <div class="announcement-content">
+
+          <h2>{{ announcement.title }}</h2>
+
+          <p class="description">
+            {{ announcement.description }}
+          </p>
+
+          <p class="published-date">
+            Publicado em:
+            {{ announcement.publicationDate }}
+          </p>
+
+        </div>
+
+      </article>
+
+    } @empty {
+
+      <p class="empty-message">
+        Nenhum anúncio acadêmico disponível no momento.
+      </p>
+
+    }
+
+  </section>
+
+</main>

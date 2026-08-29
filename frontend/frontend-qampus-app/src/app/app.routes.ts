@@ -8,6 +8,8 @@ import { Home } from './post/home/home';
 import { Duvida } from './post/duvida/duvida';
 import { EditPost } from './post/edit-post/edit-post';
 import { Profile } from './profile/profile';
+import { AnnouncementList } from './announcement/announcement-list/announcement-list';
+import { CreateAnnouncement } from './announcement/create-announcement/create-announcement';
 
 export const routes: Routes = [
   {
@@ -60,5 +62,18 @@ export const routes: Routes = [
     path: 'post/editar/:idPost/comentario/:idComentario',
     component: Duvida,
     canActivate: [authGuard],
+  },
+
+  {
+    path: 'anuncios',
+    component: AnnouncementList,
+    canActivate: [authGuard]
+  },
+
+  {
+    path: 'anuncios/criar',
+    component: CreateAnnouncement,
+    canActivate: [authGuard],
+    data: { role: 'PROFESSOR' }
   },
 ];
