@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Navbar } from '../../navbar/navbar';
-import { Post, PostService, Answer } from '../post-service';
+import { Post, PostService, Answer, PostRecomend } from '../post-service';
 
 @Component({
   selector: 'app-duvida',
@@ -16,7 +16,7 @@ export class Duvida implements OnInit {
 
   novaResposta = '';
 
-  relacionadas: Post[] = [];
+  relacionadas: PostRecomend[] = [];
 
   respostas: Answer[] = [];
   editResposta: Answer = {
@@ -74,7 +74,7 @@ export class Duvida implements OnInit {
           }
         }
 
-        this.relacionadas = await this.postService.findAll();
+        this.relacionadas = await this.postService.recommendation(post.id);
 
         this.cdr.detectChanges();
 

@@ -144,13 +144,15 @@
   <aside class="relacionadas">
 
     <h3>Relacionadas:</h3>
-
+    @if (relacionadas.length == 0) {
+      <p style="text-align: center;">Nenhum post relacionado encontrado</p>
+    }
     @for (duvida of relacionadas; track duvida.id) {
     @if (duvida.id != post?.id) {
     <div class="relacionada">
 
       <span class="related-votes">
-        {{ duvida.upVotes - duvida.downVotes }}
+        {{ duvida.voteBalance }}
       </span>
 
       <span class="related-title" (click)="visualizarRelacionada(duvida.id)">

@@ -38,6 +38,12 @@ export interface Answer {
   downVotes: number;
 }
 
+export interface PostRecomend {
+  id: string;
+  title: string;
+  voteBalance: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -242,5 +248,17 @@ export class PostService {
     })
 
     return response.ok;
+  }
+
+  async recommendation(id: string): Promise<PostRecomend[]> {
+    const response = await fetch(this.apiUrl + "/" + id + "/recommend", {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      },
+    })
+    const data = await response.json();
+    return data;
   }
 }
