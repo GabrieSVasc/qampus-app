@@ -141,4 +141,26 @@
     }
 
   </section>
+  <aside class="relacionadas">
+
+    <h3>Relacionadas:</h3>
+
+    @for (duvida of relacionadas; track duvida.id) {
+    @if (duvida.id != post?.id) {
+    <div class="relacionada">
+
+      <span class="related-votes">
+        {{ duvida.upVotes - duvida.downVotes }}
+      </span>
+
+      <span class="related-title" (click)="visualizarRelacionada(duvida.id)">
+        {{ duvida.title }}
+      </span>
+
+    </div>
+
+    }
+    }
+
+  </aside>
 </main>
