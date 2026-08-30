@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { vi } from 'vitest';
+import { of } from 'rxjs';
 
 import { Duvida } from './duvida';
 import { Post, PostService, Answer } from '../post-service';
@@ -49,18 +50,32 @@ describe('Duvida', () => {
     upvotePost: vi.fn(),
     downvotePost: vi.fn(),
     upvoteAnswer: vi.fn(),
-    downvoteAnswer: vi.fn()
+    downvoteAnswer: vi.fn(),
+    recommendation: vi.fn()
+  };
+
+  const paramMapMock = {
+    get: vi.fn((param: string): string | null => {
+      if (param === 'idPost') {
+        return '1';
+      }
+
+      if (param === 'idComentario') {
+        return null;
+      }
+
+      return null;
+    })
   };
 
   beforeEach(async () => {
     vi.clearAllMocks();
+
     routerMock = {
       navigate: vi.fn()
     };
 
     vi.spyOn(window, 'alert').mockImplementation(() => { });
-
-    postServiceMock.getAnswersPost.mockResolvedValue([]);
 
     postServiceMock.findById.mockResolvedValue({
       ...postMock,
@@ -101,6 +116,9 @@ describe('Duvida', () => {
       downVotes: 4
     });
 
+    // O componente chama recommendation() no ngOnInit
+    postServiceMock.recommendation.mockResolvedValue([]);
+
     await TestBed.configureTestingModule({
       imports: [Duvida],
       providers: [
@@ -111,20 +129,10 @@ describe('Duvida', () => {
         {
           provide: ActivatedRoute,
           useValue: {
+            paramMap: of(paramMapMock),
+
             snapshot: {
-              paramMap: {
-                get: vi.fn((param: string) => {
-                  if (param === 'idPost') {
-                    return '1';
-                  }
-
-                  if (param === 'idComentario') {
-                    return null;
-                  }
-
-                  return null;
-                })
-              }
+              paramMap: paramMapMock
             }
           }
         },
@@ -138,6 +146,7 @@ describe('Duvida', () => {
     fixture = TestBed.createComponent(Duvida);
     component = fixture.componentInstance;
 
+    await component.ngOnInit();
     await fixture.whenStable();
   });
 
@@ -146,16 +155,25 @@ describe('Duvida', () => {
   });
 
   it('should load the post by id', () => {
-    expect(postServiceMock.getAnswersPost).toHaveBeenCalledWith('1');
-    expect(postServiceMock.findById).toHaveBeenCalledWith('1');
+    expect(
+      postServiceMock.findById
+    ).toHaveBeenCalledWith('1');
+
+    expect(
+      postServiceMock.getAnswersPost
+    ).toHaveBeenCalledWith('1');
 
     expect(component.post).toBeTruthy();
 
     expect(component.post?.id).toBe('1');
+
     expect(component.post?.title).toBe(
       'Como funciona a matrícula nas disciplinas?'
     );
-    expect(component.post?.content).toBe('Conteúdo da dúvida');
+
+    expect(component.post?.content).toBe(
+      'Conteúdo da dúvida'
+    );
   });
 
   it('should contain the post votes', () => {
@@ -165,8 +183,14 @@ describe('Duvida', () => {
 
   it('should contain the post tags', () => {
     expect(component.post?.tags.length).toBe(2);
-    expect(component.post?.tags[0].name).toBe('CURSO');
-    expect(component.post?.tags[1].name).toBe('TURMA 1');
+
+    expect(
+      component.post?.tags[0].name
+    ).toBe('CURSO');
+
+    expect(
+      component.post?.tags[1].name
+    ).toBe('TURMA 1');
   });
 
   it('should load the answers', async () => {
@@ -180,15 +204,26 @@ describe('Duvida', () => {
 
     await component.ngOnInit();
 
-    expect(postServiceMock.getAnswersPost).toHaveBeenCalledWith('1');
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(
+      postServiceMock.getAnswersPost
+    ).toHaveBeenCalledWith('1');
+
     expect(component.respostas.length).toBe(1);
-    expect(component.respostas[0].id).toBe('answer-1');
+
+    expect(
+      component.respostas[0].id
+    ).toBe('answer-1');
   });
 
   it('should increase the up votes', async () => {
     await component.votar(1);
 
-    expect(postServiceMock.upvotePost).toHaveBeenCalledWith('1');
+    expect(
+      postServiceMock.upvotePost
+    ).toHaveBeenCalledWith('1');
+
     expect(component.post?.upVotes).toBe(13);
     expect(component.post?.downVotes).toBe(3);
   });
@@ -196,7 +231,10 @@ describe('Duvida', () => {
   it('should increase the down votes', async () => {
     await component.votar(-1);
 
-    expect(postServiceMock.downvotePost).toHaveBeenCalledWith('1');
+    expect(
+      postServiceMock.downvotePost
+    ).toHaveBeenCalledWith('1');
+
     expect(component.post?.upVotes).toBe(12);
     expect(component.post?.downVotes).toBe(4);
   });
@@ -206,8 +244,13 @@ describe('Duvida', () => {
 
     await component.votar(1);
 
-    expect(postServiceMock.upvotePost).not.toHaveBeenCalled();
-    expect(postServiceMock.downvotePost).not.toHaveBeenCalled();
+    expect(
+      postServiceMock.upvotePost
+    ).not.toHaveBeenCalled();
+
+    expect(
+      postServiceMock.downvotePost
+    ).not.toHaveBeenCalled();
   });
 
   it('should not allow an empty response', async () => {
@@ -219,7 +262,10 @@ describe('Duvida', () => {
       'O conteúdo da resposta é obrigatório.'
     );
 
-    expect(postServiceMock.createAnswer).not.toHaveBeenCalled();
+    expect(
+      postServiceMock.createAnswer
+    ).not.toHaveBeenCalled();
+
     expect(component.novaResposta).toBe('   ');
   });
 
@@ -229,16 +275,24 @@ describe('Duvida', () => {
 
     await component.responder();
 
-    expect(postServiceMock.createAnswer).not.toHaveBeenCalled();
-    expect(component.novaResposta).toBe('Resposta válida.');
+    expect(
+      postServiceMock.createAnswer
+    ).not.toHaveBeenCalled();
+
+    expect(component.novaResposta).toBe(
+      'Resposta válida.'
+    );
   });
 
   it('should create a response successfully', async () => {
-    component.novaResposta = 'Essa é uma resposta válida.';
+    component.novaResposta =
+      'Essa é uma resposta válida.';
 
     await component.responder();
 
-    expect(postServiceMock.createAnswer).toHaveBeenCalledWith(
+    expect(
+      postServiceMock.createAnswer
+    ).toHaveBeenCalledWith(
       '1',
       'Essa é uma resposta válida.'
     );
@@ -247,13 +301,20 @@ describe('Duvida', () => {
   });
 
   it('should add the created response to the discussion', async () => {
-    component.novaResposta = 'Essa é uma resposta válida.';
+    component.novaResposta =
+      'Essa é uma resposta válida.';
 
     await component.responder();
 
     expect(component.respostas.length).toBe(1);
-    expect(component.respostas[0].id).toBe('answer-1');
-    expect(component.respostas[0].content).toBe(
+
+    expect(
+      component.respostas[0].id
+    ).toBe('answer-1');
+
+    expect(
+      component.respostas[0].content
+    ).toBe(
       'Essa é uma resposta válida.'
     );
   });
@@ -263,7 +324,8 @@ describe('Duvida', () => {
       new Error('Erro ao criar resposta')
     );
 
-    component.novaResposta = 'Resposta válida.';
+    component.novaResposta =
+      'Resposta válida.';
 
     await component.responder();
 
@@ -271,7 +333,9 @@ describe('Duvida', () => {
       'Erro ao enviar resposta.'
     );
 
-    expect(component.novaResposta).toBe('Resposta válida.');
+    expect(component.novaResposta).toBe(
+      'Resposta válida.'
+    );
   });
 
   it('should handle upvote error', async () => {
@@ -305,15 +369,25 @@ describe('Duvida', () => {
 
     component.respostas = [resposta];
 
-    await component.votarResposta(resposta, 1);
+    await component.votarResposta(
+      resposta,
+      1
+    );
 
-    expect(postServiceMock.upvoteAnswer).toHaveBeenCalledWith(
+    expect(
+      postServiceMock.upvoteAnswer
+    ).toHaveBeenCalledWith(
       '1',
       'answer-1'
     );
 
-    expect(component.respostas[0].upVotes).toBe(5);
-    expect(component.respostas[0].downVotes).toBe(2);
+    expect(
+      component.respostas[0].upVotes
+    ).toBe(5);
+
+    expect(
+      component.respostas[0].downVotes
+    ).toBe(2);
   });
 
   it('should downvote an answer', async () => {
@@ -325,15 +399,25 @@ describe('Duvida', () => {
 
     component.respostas = [resposta];
 
-    await component.votarResposta(resposta, -1);
+    await component.votarResposta(
+      resposta,
+      -1
+    );
 
-    expect(postServiceMock.downvoteAnswer).toHaveBeenCalledWith(
+    expect(
+      postServiceMock.downvoteAnswer
+    ).toHaveBeenCalledWith(
       '1',
       'answer-1'
     );
 
-    expect(component.respostas[0].upVotes).toBe(4);
-    expect(component.respostas[0].downVotes).toBe(3);
+    expect(
+      component.respostas[0].upVotes
+    ).toBe(4);
+
+    expect(
+      component.respostas[0].downVotes
+    ).toBe(3);
   });
 
   it('should not vote on answer when there is no post', async () => {
@@ -343,10 +427,18 @@ describe('Duvida', () => {
       ...respostaMock
     };
 
-    await component.votarResposta(resposta, 1);
+    await component.votarResposta(
+      resposta,
+      1
+    );
 
-    expect(postServiceMock.upvoteAnswer).not.toHaveBeenCalled();
-    expect(postServiceMock.downvoteAnswer).not.toHaveBeenCalled();
+    expect(
+      postServiceMock.upvoteAnswer
+    ).not.toHaveBeenCalled();
+
+    expect(
+      postServiceMock.downvoteAnswer
+    ).not.toHaveBeenCalled();
   });
 
   it('should handle answer upvote error', async () => {
@@ -362,10 +454,18 @@ describe('Duvida', () => {
       new Error('Erro ao votar na resposta')
     );
 
-    await component.votarResposta(resposta, 1);
+    await component.votarResposta(
+      resposta,
+      1
+    );
 
-    expect(component.respostas[0].upVotes).toBe(4);
-    expect(component.respostas[0].downVotes).toBe(2);
+    expect(
+      component.respostas[0].upVotes
+    ).toBe(4);
+
+    expect(
+      component.respostas[0].downVotes
+    ).toBe(2);
   });
 
   it('should handle answer downvote error', async () => {
@@ -381,10 +481,18 @@ describe('Duvida', () => {
       new Error('Erro ao votar na resposta')
     );
 
-    await component.votarResposta(resposta, -1);
+    await component.votarResposta(
+      resposta,
+      -1
+    );
 
-    expect(component.respostas[0].upVotes).toBe(4);
-    expect(component.respostas[0].downVotes).toBe(2);
+    expect(
+      component.respostas[0].upVotes
+    ).toBe(4);
+
+    expect(
+      component.respostas[0].downVotes
+    ).toBe(2);
   });
 
   it('should edit an answer successfully', async () => {
@@ -393,40 +501,56 @@ describe('Duvida', () => {
       content: 'Resposta editada.'
     };
 
-    await component.editarResposta('answer-1');
+    await component.editarResposta(
+      'answer-1'
+    );
 
-    expect(postServiceMock.editAnswer).toHaveBeenCalledWith(
+    expect(
+      postServiceMock.editAnswer
+    ).toHaveBeenCalledWith(
       '1',
       'answer-1',
       'Resposta editada.'
     );
 
-    expect(routerMock.navigate).toHaveBeenCalledWith([
+    expect(
+      routerMock.navigate
+    ).toHaveBeenCalledWith([
       'post/1'
     ]);
   });
 
   it('should show an alert when answer editing fails', async () => {
-    postServiceMock.editAnswer.mockResolvedValueOnce(null);
+    postServiceMock.editAnswer.mockResolvedValueOnce(
+      null
+    );
 
     component.editResposta = {
       ...respostaMock,
       content: 'Resposta editada.'
     };
 
-    await component.editarResposta('answer-1');
+    await component.editarResposta(
+      'answer-1'
+    );
 
-    expect(postServiceMock.editAnswer).toHaveBeenCalledWith(
+    expect(
+      postServiceMock.editAnswer
+    ).toHaveBeenCalledWith(
       '1',
       'answer-1',
       'Resposta editada.'
     );
 
-    expect(window.alert).toHaveBeenCalledWith(
+    expect(
+      window.alert
+    ).toHaveBeenCalledWith(
       'Não foi possível editar o comentário'
     );
 
-    expect(routerMock.navigate).not.toHaveBeenCalled();
+    expect(
+      routerMock.navigate
+    ).not.toHaveBeenCalled();
   });
 
   it('should not edit an answer when there is no post', async () => {
@@ -437,10 +561,17 @@ describe('Duvida', () => {
       content: 'Resposta editada.'
     };
 
-    await component.editarResposta('answer-1');
+    await component.editarResposta(
+      'answer-1'
+    );
 
-    expect(postServiceMock.editAnswer).not.toHaveBeenCalled();
-    expect(routerMock.navigate).not.toHaveBeenCalled();
+    expect(
+      postServiceMock.editAnswer
+    ).not.toHaveBeenCalled();
+
+    expect(
+      routerMock.navigate
+    ).not.toHaveBeenCalled();
   });
 
   it('should select the answer to edit from the route', async () => {
@@ -452,9 +583,7 @@ describe('Duvida', () => {
 
     postServiceMock.getAnswersPost.mockResolvedValueOnce([resposta]);
 
-    const paramMap = TestBed.inject(ActivatedRoute).snapshot.paramMap;
-
-    vi.spyOn(paramMap, 'get').mockImplementation((param: string) => {
+    paramMapMock.get.mockImplementation((param: string) => {
       if (param === 'idPost') {
         return '1';
       }
@@ -466,9 +595,12 @@ describe('Duvida', () => {
       return null;
     });
 
+    // Executa novamente o ngOnInit depois de configurar os parâmetros
     await component.ngOnInit();
+    await fixture.whenStable();
 
     expect(component.editResposta.id).toBe('answer-1');
+
     expect(component.editResposta.content).toBe(
       'Resposta que será editada.'
     );
