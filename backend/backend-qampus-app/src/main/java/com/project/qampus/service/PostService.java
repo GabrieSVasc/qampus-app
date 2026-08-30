@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.project.qampus.dto.RecommendationResponseDTO;
 import com.project.qampus.repositories.VoteRepository;
 
 @Service
@@ -178,5 +179,12 @@ public class PostService {
     // The findByCategory method was redundant; removed.
     // The explicit findAllOrderByVotes wrapper is also redundant; callers use
     // findAll() directly.
+
+    public List<RecommendationResponseDTO> recommend(String postId) {
+        postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Post não encontrado"));
+
+        return postRepository.findRecommendedPosts(postId).stream().map(post -> 
+                new RecommendationResponseDTO(post.getId(), post.getTitle(), post.getUpVotes() - post.getDownVotes())).toList();
+    }
 
 }

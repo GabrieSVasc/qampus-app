@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.project.qampus.dto.RecommendationResponseDTO;
 import com.project.qampus.model.User;
 
 
@@ -132,5 +133,10 @@ public class PostController {
         List<AnswerResponseDTO> answers = answerService.findByPostId(postId).stream().map(AnswerResponseDTO::from).toList();
 
         return ResponseEntity.ok(answers);
+    }
+
+    @GetMapping("/{postId}/recommend")
+    public ResponseEntity<List<RecommendationResponseDTO>> recommendations(@PathVariable String postId) {
+        return ResponseEntity.ok(postService.recommend(postId));
     }
 }
