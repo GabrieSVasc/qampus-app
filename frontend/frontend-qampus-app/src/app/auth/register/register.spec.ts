@@ -10,6 +10,7 @@ describe('Register', () => {
   let fixture: ComponentFixture<Register>;
   let authServiceMock: {
     register: ReturnType<typeof vi.fn>;
+    getRole: ReturnType<typeof vi.fn>;
   }
   let routerMock: {
     navigate: ReturnType<typeof vi.fn>;
@@ -18,6 +19,7 @@ describe('Register', () => {
   beforeEach(async () => {
     authServiceMock = {
       register: vi.fn(),
+      getRole: vi.fn()
     };
 
     routerMock = {

@@ -15,7 +15,7 @@ export class Register {
   constructor(
     private authService: AuthService,
     private router: Router
-  ){}
+  ) { }
   submitClicked: boolean = false;
   registerForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -24,12 +24,12 @@ export class Register {
     confirmPassword: new FormControl('', Validators.required),
     role: new FormControl('', Validators.required)
   })
-  goTo(rota: string){
+  goTo(rota: string) {
     this.router.navigate([rota])
   }
-  async submit(){
+  async submit() {
     this.submitClicked = true;
-    if(this.registerForm.valid){
+    if (this.registerForm.valid) {
       const user: User = {
         name: this.registerForm.value.name!,
         email: this.registerForm.value.email!,
@@ -37,9 +37,13 @@ export class Register {
         role: this.registerForm.value.role!
       }
       const response = await this.authService.register(user);
-      if(response){
-        this.router.navigate(['home']);
-      }else{
+      if (response) {
+        if (this.authService.getRole() == 'STUDENT') {
+          this.router.navigate(["home"]);
+        } else if (this.authService.getRole() == 'PROFESSOR') {
+          this.router.navigate(["anuncios"]);
+        }
+      } else {
         alert("Já existe uma conta cadastrada com este email.");
       }
     }

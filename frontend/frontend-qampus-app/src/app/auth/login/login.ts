@@ -21,7 +21,11 @@ export class Login {
   async onSubmit() {
     const sucesso = await this.authService.login(this.email, this.password);
     if(sucesso){
-      this.router.navigate(["home"]);
+      if(this.authService.getRole() == 'STUDENT'){
+        this.router.navigate(["home"]);
+      }else if(this.authService.getRole()=='PROFESSOR'){
+        this.router.navigate(["anuncios"]);
+      }
     }else{
       alert("Email ou Senha Inválidos");
     }

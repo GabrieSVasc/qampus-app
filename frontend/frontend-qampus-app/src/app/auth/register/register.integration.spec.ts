@@ -5,14 +5,14 @@ import { Router } from "@angular/router";
 import { User } from "../user";
 
 
-describe('Register + AuthService Integration', ()=>{
+describe('Register + AuthService Integration', () => {
     let component: Register;
     let fixture: ComponentFixture<Register>;
-    let routerMock:{
+    let routerMock: {
         navigate: ReturnType<typeof vi.fn>;
     }
 
-    beforeEach(async()=>{
+    beforeEach(async () => {
         routerMock = {
             navigate: vi.fn()
         }
@@ -37,13 +37,21 @@ describe('Register + AuthService Integration', ()=>{
         vi.resetAllMocks();
     });
 
-    it('should register through AuthService and navigate to home', async()=>{
+    it('should register through AuthService and navigate to home', async () => {
+        const payload = btoa(JSON.stringify({
+            sub: '123',
+            role: 'STUDENT'
+        }));
+
+        const tokenIntegracao = `header.${payload}.signature`;
+
         const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
             ok: true,
             json: async () => ({
-                token: 'token-integracao',
-            }),
+                token: tokenIntegracao
+            })
         } as Response);
+
 
         component.registerForm.setValue({
             name: "Nome de Teste",
@@ -68,18 +76,18 @@ describe('Register + AuthService Integration', ()=>{
             })
         );
 
-        expect(localStorage.getItem('token')).toBe('token-integracao');
+        expect(localStorage.getItem('token')).toBe(tokenIntegracao);
         expect(routerMock.navigate).toHaveBeenCalledWith(['home']);
     })
 
-    it('should not navigate to home when AuthService register fails', async()=>{
+    it('should not navigate to home when AuthService register fails', async () => {
         vi.spyOn(globalThis, 'fetch').mockResolvedValue({
             ok: false,
         } as Response);
 
         const alertMock = vi
             .spyOn(window, 'alert')
-            .mockImplementation(() => {});
+            .mockImplementation(() => { });
 
         component.registerForm.setValue({
             name: "Nome de Teste",

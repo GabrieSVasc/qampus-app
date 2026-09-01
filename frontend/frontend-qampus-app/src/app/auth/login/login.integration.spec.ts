@@ -37,10 +37,16 @@ describe('Login + AuthService Integration', () => {
   });
 
   it('should login through AuthService and navigate to home', async () => {
+    const payload = btoa(JSON.stringify({
+            sub: '123',
+            role: 'STUDENT'
+        }));
+
+    const tokenIntegracao = `header.${payload}.signature`;
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => ({
-        token: 'token-integracao',
+        token: tokenIntegracao
       }),
     } as Response);
 
@@ -56,7 +62,7 @@ describe('Login + AuthService Integration', () => {
       })
     );
 
-    expect(localStorage.getItem('token')).toBe('token-integracao');
+    expect(localStorage.getItem('token')).toBe(tokenIntegracao);
 
     expect(routerMock.navigate).toHaveBeenCalledWith(['home']);
   });

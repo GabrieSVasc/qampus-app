@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Navbar } from "../navbar/navbar";
-import { Post, PostService, Answer } from '../post/post-service';
+import { Post, Answer } from '../post/post-service';
 import { Router } from '@angular/router';
 import { UserService, User } from '../user-service';
 import { FormsModule } from '@angular/forms';
@@ -24,7 +24,6 @@ export class Profile implements OnInit{
   respostas: Answer[] = [];
 
   constructor(
-    private postService: PostService,
     private cdr: ChangeDetectorRef,
     private router: Router,
     private userService: UserService
@@ -33,7 +32,7 @@ export class Profile implements OnInit{
   async ngOnInit() {
     try{
       this.user = await this.userService.getUser();
-      this.duvidas = await this.postService.findAll();
+      this.duvidas = await this.userService.getPosts(this.user.id);
       this.cdr.detectChanges();
       this.respostas = await this.userService.getAnswers(this.user.id);
       this.cdr.detectChanges();

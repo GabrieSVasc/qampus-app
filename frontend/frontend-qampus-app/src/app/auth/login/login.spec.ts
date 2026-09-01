@@ -11,6 +11,7 @@ describe('Login', () => {
 
   let authServiceMock: {
     login: ReturnType<typeof vi.fn>;
+    getRole: ReturnType<typeof vi.fn>;
   };
 
   let routerMock: {
@@ -20,6 +21,7 @@ describe('Login', () => {
   beforeEach(async () => {
     authServiceMock = {
       login: vi.fn(),
+      getRole: vi.fn()
     };
 
     routerMock = {
@@ -62,11 +64,13 @@ describe('Login', () => {
 
   it('should navigate to home when login is successful', async () => {
     authServiceMock.login.mockResolvedValue(true);
-
+    authServiceMock.getRole.mockReturnValue('STUDENT');
     component.email = 'teste@email.com';
     component.password = '123456';
 
     await component.onSubmit();
+
+    expect(authServiceMock.getRole).toHaveBeenCalled();
 
     expect(routerMock.navigate).toHaveBeenCalledWith(['home']);
   });
@@ -105,16 +109,16 @@ describe('Login', () => {
   });
 
   it('should navigate to registrar when register button is clicked', () => {
-  const goToSpy = vi.spyOn(component, 'goTo');
+    const goToSpy = vi.spyOn(component, 'goTo');
 
-  const element = fixture.debugElement.query(
-    By.css('a')
-  );
+    const element = fixture.debugElement.query(
+      By.css('a')
+    );
 
-  element.triggerEventHandler('click');
+    element.triggerEventHandler('click');
 
-  expect(goToSpy).toHaveBeenCalledWith('registrar');
-});
+    expect(goToSpy).toHaveBeenCalledWith('registrar');
+  });
 
   it('should update email when input changes', () => {
     const input = fixture.debugElement.query(
@@ -130,17 +134,17 @@ describe('Login', () => {
   });
 
   it('should update email when input changes', () => {
-  const input = fixture.debugElement.query(
-    By.css('input[name="email"]')
-  ).nativeElement;
+    const input = fixture.debugElement.query(
+      By.css('input[name="email"]')
+    ).nativeElement;
 
-  input.value = 'teste@email.com';
-  input.dispatchEvent(new Event('input'));
+    input.value = 'teste@email.com';
+    input.dispatchEvent(new Event('input'));
 
-  fixture.detectChanges();
+    fixture.detectChanges();
 
-  expect(component.email).toBe('teste@email.com');
-});
+    expect(component.email).toBe('teste@email.com');
+  });
 
   it('should update password when input changes', () => {
     const input = fixture.debugElement.query(
