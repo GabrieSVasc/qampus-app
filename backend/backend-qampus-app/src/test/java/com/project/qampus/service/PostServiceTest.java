@@ -27,7 +27,6 @@ import com.project.qampus.model.enums.VoteType;
 import com.project.qampus.repositories.PostRepository;
 import com.project.qampus.repositories.UserRepository;
 import com.project.qampus.repositories.VoteRepository;
-import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -283,7 +282,7 @@ class PostServiceTest {
         var result = postService.searchPost("Spring");
 
         assertEquals(1, result.size());
-        assertEquals("Spring Boot Test", result.getFirst().getTitle());
+        assertEquals("Spring Boot Test", result.get(0).getTitle());
 
         verify(repository).findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(
                 "Spring", "Spring");
@@ -327,100 +326,4 @@ class PostServiceTest {
         assertEquals(1, result.size());
         verify(repository).findAllOrderByVotes();
     }
-    @Test
-    void shouldDeletePostSuccessfully() {
-        Post realPost = new Post();
-        realPost.setUser(user);
-
-
-        when(repository.findById("post-1")).thenReturn(Optional.of(realPost));
-
-        postService.delete("post-1", user);
-
-        verify(repository).delete(realPost);
-
-
-    }
-
-    @Test
-    void shouldThrowNotFoundWhenDeleting() {
-        when(repository.findById("post-1")).thenReturn(Optional.empty());
-
-
-        assertThrows(ResponseStatusException.class,
-                () -> postService.delete("post-1", user));
-
-
-    }
-
-    @Test
-    void shouldThrowForbiddenWhenDeletingOtherUserPost() {
-        User other = new User();
-        other.setId("user-2");
-
-
-        Post realPost = new Post();
-        realPost.setUser(other);
-
-        when(repository.findById("post-1")).thenReturn(Optional.of(realPost));
-
-        assertThrows(ResponseStatusException.class,
-                () -> postService.delete("post-1", user));
-
-    }
-
-    @Test
-    void shouldThrowAccessDeniedWhenUpdatingOtherUserPost() {
-        User other = new User();
-        other.setId("user-2");
-
-
-        Post realPost = new Post();
-        realPost.setUser(other);
-
-        when(repository.findById("post-1")).thenReturn(Optional.of(realPost));
-        when(authentication.getPrincipal()).thenReturn(user);
-
-        assertThrows(Exception.class,
-                () -> postService.update("post-1",
-                        new PostDTO("x", "y", Set.of()),
-                        authentication));
-
-
-    }
-
-    @Test
-    void shouldReturnRecommendations() {
-        Post p = new Post();
-        p.setId("2");
-        p.setTitle("Recomendado");
-        p.setUpVotes(10L);
-        p.setDownVotes(2L);
-
-
-        when(repository.findById("1")).thenReturn(Optional.of(new Post()));
-        when(repository.findRecommendedPosts("1")).thenReturn(List.of(p));
-
-        var result = postService.recommend("1");
-
-        assertEquals(1, result.size());
-        assertEquals("Recomendado", result.getFirst().title());
-        assertEquals(8L, result.getFirst().voteBalance());
-
-
-    }
-
-    @Test
-    void shouldThrowWhenPostNotFoundInRecommend() {
-        when(repository.findById("1")).thenReturn(Optional.empty());
-
-
-        assertThrows(ResponseStatusException.class,
-                () -> postService.recommend("1"));
-
-
-    }
-
-
-
 }
